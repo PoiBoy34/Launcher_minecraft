@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "files": [
+    {
+      "name": "fabric-api-0.116.12+1.21.1.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/survie/mods/fabric-api-0.116.12+1.21.1.jar",
+      "sha1": "90cd4212da24365fae24c0090234b053094b218b"
+    }
+  ]
+}
