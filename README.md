@@ -2,7 +2,6 @@
 *Mise en place de l'environnement de travail et des fondations du projet.*
 
 ### 💻 Les tâches d'Eman (Développement Windows)
-- [ ] Cloner le dépôt GitHub sur sa machine Windows.
 - [ ] Initialiser le projet Node.js (`npm init -y`).
 - [ ] Installer les dépendances principales : `npm install minecraft-launcher-core electron download`.
 - [ ] Installer les dépendances de développement : `npm install electron-builder --save-dev`.
