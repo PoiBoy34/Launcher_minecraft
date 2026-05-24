@@ -1,0 +1,14 @@
+{
+  "modpacks": [
+    {
+      "id": "pack_cobblemon",
+      "name": "Aventure Cobblemon",
+      "version": "1.0.0",
+      "minecraft": "1.20.1",
+      "loader": "fabric",
+      "description": "Attrapez-les tous dans Minecraft ! Modpack basé sur Cobblemon pour le serveur.",
+      "icon_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/assets/pack-icons/cobblemon.png",
+      "manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/manifest.json"
+    }
+  ]
+}
