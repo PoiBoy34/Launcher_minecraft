@@ -1,4 +1,4 @@
-## 🏗️ Phase 1 : Initialisation et Architecture (Setup)
+aaaaa## 🏗️ Phase 1 : Initialisation et Architecture (Setup)
 *Mise en place de l'environnement de travail et des fondations du projet.*
 
 ### 🛠️ Les tâches de Joseph (Infrastructure & Serveur)
