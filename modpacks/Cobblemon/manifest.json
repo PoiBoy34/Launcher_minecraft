@@ -282,6 +282,11 @@
       "sha1": "bede157e2378d44434d39514fbcbabfcba72a0f7"
     },
     {
+      "name": "cobblemon-battle-extras-fabric-1.8.30.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/cobblemon-battle-extras-fabric-1.8.30.jar",
+      "sha1": "f06e8fadf3ade965ac665c31de3594ee1b638e47"
+    },
+    {
       "name": "cobblemon-battle-positions-1.1.3.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/cobblemon-battle-positions-1.1.3.jar",
       "sha1": "2edbf7224a689b3463327f2970b481fd8e4ceae8"
@@ -452,9 +457,9 @@
       "sha1": "d68a3758ae1f18a382af69ad1dd1c554e4a7f164"
     },
     {
-      "name": "midnightlib-1.7.5-fabric+1.21.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/midnightlib-1.7.5-fabric+1.21.1.jar",
-      "sha1": "c32c79bd001e400ec7ebaccfffaed465daf42835"
+      "name": "midnightlib-fabric-1.9.3+1.21.1.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/midnightlib-fabric-1.9.3+1.21.1.jar",
+      "sha1": "6595a90351e827b99b36fa2c6ef1dde1a4c8fdf1"
     },
     {
       "name": "missingmons-cobblemon-3.6.1.jar",
