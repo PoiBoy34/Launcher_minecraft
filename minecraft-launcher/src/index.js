@@ -42,11 +42,47 @@ ipcMain.handle('get-catalog', async () => {
     }
 });
 
+// --- GESTION DE LA CONNEXION AUTOMATIQUE ---
+ipcMain.on('auto-login', async (event) => {
+    try {
+        const authPath = path.join(app.getPath('userData'), 'msmc-auth.json');
+        if (fs.existsSync(authPath)) {
+            const savedData = JSON.parse(fs.readFileSync(authPath, 'utf8'));
+            if (savedData.refresh_token) {
+                const authManager = new Auth("select_account");
+                const xboxManager = await authManager.refresh(savedData.refresh_token);
+                mcToken = await xboxManager.getMinecraft();
+                
+                // On met à jour le token sur le disque car le refresh token a pu changer
+                if (xboxManager.msToken) {
+                    fs.writeFileSync(authPath, JSON.stringify(xboxManager.msToken));
+                }
+                
+                event.sender.send('auth-success', { name: mcToken.profile.name });
+                return;
+            }
+        }
+        // S'il n'y a pas de fichier, on dit à l'interface d'afficher le bouton normal
+        event.sender.send('auth-missing');
+    } catch (err) {
+        console.log("[AutoLogin] Session expirée ou invalide :", err.message);
+        event.sender.send('auth-missing');
+    }
+});
+
+// --- CONNEXION MANUELLE (PREMIÈRE FOIS) ---
 ipcMain.on('login-microsoft', async (event) => {
     try {
         const authManager = new Auth("select_account");
         const xboxManager = await authManager.launch("electron");
         mcToken = await xboxManager.getMinecraft();
+        
+        // Sauvegarde du token sur le disque dur
+        if (xboxManager.msToken) {
+            const authPath = path.join(app.getPath('userData'), 'msmc-auth.json');
+            fs.writeFileSync(authPath, JSON.stringify(xboxManager.msToken));
+        }
+
         event.sender.send('auth-success', { name: mcToken.profile.name });
     } catch (err) {
         event.sender.send('auth-error', { message: err.message });
@@ -97,7 +133,6 @@ async function setupFabric(gameDir, mcVersion, loaderVersion) {
     return customName;
 }
 
-// Fonction pour télécharger le fichier servers.dat
 async function setupServersDat(gameDir, fileUrl) {
     if (!fileUrl) return;
     const serversDatPath = path.join(gameDir, 'servers.dat');
@@ -124,7 +159,6 @@ ipcMain.on('launch-game', async (event, packData) => {
     const datapacksDir = path.join(gameDir, 'datapacks');
     const shaderpacksDir = path.join(gameDir, 'shaderpacks');
 
-    // 1. SYNC MODS
     try {
         await syncMods(
             packData.manifest_url,
@@ -139,7 +173,6 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
-    // 2. SYNC DATAPACKS
     if (packData.datapacks_manifest_url) {
         try {
             await syncDatapacks(
@@ -151,12 +184,10 @@ ipcMain.on('launch-game', async (event, packData) => {
                 })
             );
         } catch (err) {
-            console.error("Erreur sync datapacks :", err);
             event.sender.send('sync-status', { message: "Avertissement datapacks : " + err.message });
         }
     }
 
-    // 3. SYNC SHADERS
     if (packData.shaderpacks_manifest_url) {
         try {
             await syncShaderpacks(
@@ -168,16 +199,13 @@ ipcMain.on('launch-game', async (event, packData) => {
                 })
             );
         } catch (err) {
-            console.error("Erreur sync shaderpacks :", err);
             event.sender.send('sync-status', { message: "Avertissement shaders : " + err.message });
         }
     }
 
-    // 4. CONFIG SERVEUR PRÉ-ENREGISTRÉ
     event.sender.send('sync-status', { message: "Configuration du serveur multijoueur..." });
     await setupServersDat(gameDir, packData.servers_dat_url);
 
-    // 5. ASSEMBLAGE .part
     try {
         const allFiles = fs.readdirSync(modsDir);
         const part00Files = allFiles.filter(f => f.endsWith('.part00'));
@@ -202,7 +230,6 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
-    // 6. LANCEMENT AVEC FABRIC
     try {
         event.sender.send('sync-status', { message: "Préparation de Fabric..." });
         
