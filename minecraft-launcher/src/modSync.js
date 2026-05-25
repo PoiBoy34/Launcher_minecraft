@@ -4,17 +4,27 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
-const CATALOG_URL = "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/catalog.json";
+function getCatalogUrl() {
+    return "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/catalog.json?t=" + Date.now();
+}
+
+function getUrl(baseUrl) {
+    return baseUrl + (baseUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+}
 
 function fetchJSON(url) {
     return new Promise((resolve, reject) => {
         const client = url.startsWith('https') ? https : http;
         client.get(url, (res) => {
+            if (res.statusCode === 301 || res.statusCode === 302) {
+                fetchJSON(res.headers.location).then(resolve).catch(reject);
+                return;
+            }
             let data = '';
             res.on('data', chunk => data += chunk);
             res.on('end', () => {
                 try { resolve(JSON.parse(data)); }
-                catch (e) { reject(e); }
+                catch (e) { reject(new Error('JSON invalide : ' + e.message)); }
             });
         }).on('error', reject);
     });
@@ -35,6 +45,11 @@ function downloadFile(url, destPath, onProgress) {
         const client = url.startsWith('https') ? https : http;
         const file = fs.createWriteStream(destPath);
         client.get(url, (res) => {
+            if (res.statusCode === 301 || res.statusCode === 302) {
+                file.close();
+                downloadFile(res.headers.location, destPath, onProgress).then(resolve).catch(reject);
+                return;
+            }
             const total = parseInt(res.headers['content-length'] || '0');
             let received = 0;
             res.on('data', chunk => {
@@ -51,12 +66,12 @@ function downloadFile(url, destPath, onProgress) {
 }
 
 async function fetchCatalog() {
-    return await fetchJSON(CATALOG_URL);
+    return await fetchJSON(getCatalogUrl());
 }
 
 async function syncMods(manifestUrl, modsDir, onStatus, onProgress) {
     onStatus("Récupération du manifest...");
-    const manifest = await fetchJSON(manifestUrl);
+    const manifest = await fetchJSON(getUrl(manifestUrl));
 
     fs.mkdirSync(modsDir, { recursive: true });
 
