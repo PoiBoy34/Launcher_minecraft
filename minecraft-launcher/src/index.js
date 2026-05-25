@@ -42,7 +42,6 @@ ipcMain.handle('get-catalog', async () => {
     }
 });
 
-// --- GESTION DE LA CONNEXION AUTOMATIQUE ---
 ipcMain.on('auto-login', async (event) => {
     try {
         const authPath = path.join(app.getPath('userData'), 'msmc-auth.json');
@@ -52,37 +51,29 @@ ipcMain.on('auto-login', async (event) => {
                 const authManager = new Auth("select_account");
                 const xboxManager = await authManager.refresh(savedData.refresh_token);
                 mcToken = await xboxManager.getMinecraft();
-                
-                // On met à jour le token sur le disque car le refresh token a pu changer
                 if (xboxManager.msToken) {
                     fs.writeFileSync(authPath, JSON.stringify(xboxManager.msToken));
                 }
-                
                 event.sender.send('auth-success', { name: mcToken.profile.name });
                 return;
             }
         }
-        // S'il n'y a pas de fichier, on dit à l'interface d'afficher le bouton normal
         event.sender.send('auth-missing');
     } catch (err) {
-        console.log("[AutoLogin] Session expirée ou invalide :", err.message);
+        console.log("[AutoLogin] Session expirée :", err.message);
         event.sender.send('auth-missing');
     }
 });
 
-// --- CONNEXION MANUELLE (PREMIÈRE FOIS) ---
 ipcMain.on('login-microsoft', async (event) => {
     try {
         const authManager = new Auth("select_account");
         const xboxManager = await authManager.launch("electron");
         mcToken = await xboxManager.getMinecraft();
-        
-        // Sauvegarde du token sur le disque dur
         if (xboxManager.msToken) {
             const authPath = path.join(app.getPath('userData'), 'msmc-auth.json');
             fs.writeFileSync(authPath, JSON.stringify(xboxManager.msToken));
         }
-
         event.sender.send('auth-success', { name: mcToken.profile.name });
     } catch (err) {
         event.sender.send('auth-error', { message: err.message });
@@ -109,42 +100,34 @@ function assembleParts(modsDir, baseName, onStatus) {
     });
 }
 
-async function setupFabric(gameDir, mcVersion, loaderVersion) {
-    const customName = `fabric-${mcVersion}`;
-    const versionDir = path.join(gameDir, 'versions', customName);
-    const jsonFile = path.join(versionDir, `${customName}.json`);
-
-    if (!fs.existsSync(versionDir)) fs.mkdirSync(versionDir, { recursive: true });
-
-    if (!fs.existsSync(jsonFile)) {
-        console.log(`[MC] Téléchargement du profil Fabric pour ${mcVersion}...`);
-        const url = `https://meta.fabricmc.net/v2/versions/loader/${mcVersion}/${loaderVersion}/profile/json`;
-        
-        await new Promise((resolve, reject) => {
-            https.get(url, (res) => {
-                if (res.statusCode !== 200) return reject(new Error('Erreur téléchargement Fabric'));
-                const file = fs.createWriteStream(jsonFile);
-                res.pipe(file);
-                file.on('finish', () => file.close(resolve));
-                file.on('error', reject);
-            }).on('error', reject);
-        });
-    }
-    return customName;
+function fetchWithRedirect(url) {
+    return new Promise((resolve, reject) => {
+        https.get(url, { headers: { 'User-Agent': 'minecraft-launcher' } }, (res) => {
+            if (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) {
+                fetchWithRedirect(res.headers.location).then(resolve).catch(reject);
+                return;
+            }
+            resolve(res);
+        }).on('error', reject);
+    });
 }
 
 async function setupServersDat(gameDir, fileUrl) {
     if (!fileUrl) return;
     const serversDatPath = path.join(gameDir, 'servers.dat');
-    if (!fs.existsSync(serversDatPath)) {
-        await new Promise((resolve) => {
-            https.get(fileUrl + '?t=' + Date.now(), (res) => {
-                if (res.statusCode !== 200) return resolve();
-                const file = fs.createWriteStream(serversDatPath);
-                res.pipe(file);
-                file.on('finish', () => file.close(resolve));
-            }).on('error', resolve);
+    if (fs.existsSync(serversDatPath)) return;
+    try {
+        const res = await fetchWithRedirect(fileUrl + '?t=' + Date.now());
+        if (res.statusCode !== 200) return;
+        await new Promise((resolve, reject) => {
+            const file = fs.createWriteStream(serversDatPath);
+            res.pipe(file);
+            file.on('finish', () => file.close(resolve));
+            file.on('error', reject);
         });
+        console.log('[MC] servers.dat installé');
+    } catch (err) {
+        console.error('[MC] Erreur servers.dat :', err.message);
     }
 }
 
@@ -159,10 +142,10 @@ ipcMain.on('launch-game', async (event, packData) => {
     const datapacksDir = path.join(gameDir, 'datapacks');
     const shaderpacksDir = path.join(gameDir, 'shaderpacks');
 
+    // 1. SYNC MODS
     try {
         await syncMods(
-            packData.manifest_url,
-            modsDir,
+            packData.manifest_url, modsDir,
             (msg) => event.sender.send('sync-status', { message: msg }),
             (fileName, received, total) => event.sender.send('sync-progress', {
                 fileName, pct: Math.round((received / total) * 100)
@@ -173,11 +156,11 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
+    // 2. SYNC DATAPACKS
     if (packData.datapacks_manifest_url) {
         try {
             await syncDatapacks(
-                packData.datapacks_manifest_url,
-                datapacksDir,
+                packData.datapacks_manifest_url, datapacksDir,
                 (msg) => event.sender.send('sync-status', { message: msg }),
                 (fileName, received, total) => event.sender.send('sync-progress', {
                     fileName, pct: Math.round((received / total) * 100)
@@ -188,11 +171,11 @@ ipcMain.on('launch-game', async (event, packData) => {
         }
     }
 
+    // 3. SYNC SHADERPACKS
     if (packData.shaderpacks_manifest_url) {
         try {
             await syncShaderpacks(
-                packData.shaderpacks_manifest_url,
-                shaderpacksDir,
+                packData.shaderpacks_manifest_url, shaderpacksDir,
                 (msg) => event.sender.send('sync-status', { message: msg }),
                 (fileName, received, total) => event.sender.send('sync-progress', {
                     fileName, pct: Math.round((received / total) * 100)
@@ -203,26 +186,21 @@ ipcMain.on('launch-game', async (event, packData) => {
         }
     }
 
-    event.sender.send('sync-status', { message: "Configuration du serveur multijoueur..." });
+    // 4. SERVERS.DAT
+    event.sender.send('sync-status', { message: "Configuration serveur multijoueur..." });
     await setupServersDat(gameDir, packData.servers_dat_url);
 
+    // 5. ASSEMBLAGE .part
     try {
         const allFiles = fs.readdirSync(modsDir);
-        const part00Files = allFiles.filter(f => f.endsWith('.part00'));
-        for (const part00 of part00Files) {
+        for (const part00 of allFiles.filter(f => f.endsWith('.part00'))) {
             const baseName = part00.replace('.part00', '');
             const finalPath = path.join(modsDir, baseName);
-            const partPaths = allFiles
-                .filter(f => f.startsWith(baseName + '.part'))
-                .map(f => path.join(modsDir, f));
+            const partPaths = allFiles.filter(f => f.startsWith(baseName + '.part')).map(f => path.join(modsDir, f));
             const totalPartsSize = partPaths.reduce((sum, p) => sum + fs.statSync(p).size, 0);
-            const needsAssembly = !fs.existsSync(finalPath) ||
-                fs.statSync(finalPath).size !== totalPartsSize;
-            if (needsAssembly) {
+            if (!fs.existsSync(finalPath) || fs.statSync(finalPath).size !== totalPartsSize) {
                 event.sender.send('sync-status', { message: 'Assemblage : ' + baseName + '...' });
-                await assembleParts(modsDir, baseName, (msg) =>
-                    event.sender.send('sync-status', { message: msg })
-                );
+                await assembleParts(modsDir, baseName, (msg) => event.sender.send('sync-status', { message: msg }));
             }
         }
     } catch (err) {
@@ -230,22 +208,14 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
+    // 6. LANCEMENT
+    const opts = {
+        authorization: mcToken.mclc(),
+        root: gameDir,
+        version: { number: packData.minecraft, type: "release" },
+        memory: { max: "4G", min: "2G" }
+    };
     try {
-        event.sender.send('sync-status', { message: "Préparation de Fabric..." });
-        
-        const customVersionName = await setupFabric(gameDir, packData.minecraft, "0.18.0");
-
-        const opts = {
-            authorization: mcToken.mclc(),
-            root: gameDir,
-            version: { 
-                number: packData.minecraft, 
-                type: "release",
-                custom: customVersionName
-            },
-            memory: { max: "4G", min: "2G" }
-        };
-        
         event.sender.send('sync-status', { message: "Démarrage de Minecraft..." });
         await launcher.launch(opts);
     } catch (err) {
