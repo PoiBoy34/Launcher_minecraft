@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;500;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: #0a0a1a;
+    color: #eee;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #bg {
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url('bg.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: brightness(0.35);
+  }
+
+  #overlay {
+    position: fixed; inset: 0; z-index: 1;
+    background: linear-gradient(135deg, rgba(10,10,40,0.7) 0%, rgba(30,0,60,0.5) 50%, rgba(10,10,40,0.8) 100%);
+  }
+
+  #app {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column;
+    height: 100vh; padding: 20px 28px;
+  }
+
+  /* HEADER */
+  #header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .logo-block { display: flex; align-items: center; gap: 12px; }
+  .logo-icon { font-size: 36px; }
+  .logo-text { font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700;
+    background: linear-gradient(90deg, #ffd700, #ff6b35, #e040fb);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .logo-sub { font-size: 11px; color: #a78bfa; letter-spacing: 0.15em; text-transform: uppercase; }
+
+  #auth-block { display: flex; align-items: center; gap: 10px; }
+  #login-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 18px; background: #107C10; color: white;
+    border: none; border-radius: 20px; cursor: pointer;
+    font-size: 13px; font-family: 'Exo 2', sans-serif; font-weight: 500;
+    transition: all 0.2s;
+  }
+  #login-btn:hover { background: #15a015; transform: translateY(-1px); }
+  #user-pill {
+    display: none; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px; padding: 6px 14px;
+  }
+  .user-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; }
+  #username-label { font-size: 13px; color: #d1fae5; }
+
+  /* MODPACKS */
+  #section-title {
+    font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 600;
+    color: #a78bfa; letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  #packs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; flex: 1; align-content: start;
+    overflow-y: auto; padding-right: 4px;
+  }
+
+  #packs-grid::-webkit-scrollbar { width: 4px; }
+  #packs-grid::-webkit-scrollbar-track { background: transparent; }
+  #packs-grid::-webkit-scrollbar-thumb { background: #a78bfa44; border-radius: 2px; }
+
+  .pack-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 16px;
+    cursor: pointer; transition: all 0.25s;
+    position: relative; overflow: hidden;
+  }
+  .pack-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(168,139,250,0.1), rgba(251,191,36,0.05));
+    opacity: 0; transition: opacity 0.25s;
+  }
+  .pack-card:hover { border-color: rgba(168,139,250,0.5); transform: translateY(-2px); }
+  .pack-card:hover::before { opacity: 1; }
+  .pack-card.selected {
+    border-color: #ffd700;
+    background: rgba(255,215,0,0.08);
+    box-shadow: 0 0 20px rgba(255,215,0,0.15);
+  }
+  .pack-card.selected::before { opacity: 1; }
+
+  .pack-img-wrap { width: 56px; height: 56px; border-radius: 8px; overflow: hidden; margin-bottom: 10px;
+    background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; }
+  .pack-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .pack-img-wrap .pack-emoji { font-size: 28px; }
+
+  .pack-name { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; color: #f9fafb; }
+  .pack-desc { font-size: 11px; color: #9ca3af; margin-top: 4px; line-height: 1.4;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .pack-meta { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .pack-tag {
+    font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600;
+    background: rgba(168,139,250,0.2); color: #c4b5fd;
+  }
+  .pack-tag.mc { background: rgba(74,222,128,0.15); color: #6ee7b7; }
+
+  .selected-badge {
+    position: absolute; top: 8px; right: 8px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: #ffd700; display: none;
+    align-items: center; justify-content: center; font-size: 11px;
+  }
+  .pack-card.selected .selected-badge { display: flex; }
+
+  #catalog-status { color: #9ca3af; font-size: 13px; padding: 20px 0; }
+
+  /* BOTTOM BAR */
+  #bottom {
+    margin-top: 16px;
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; padding: 14px 18px;
+    backdrop-filter: blur(10px);
+  }
+
+  #selected-info {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+  }
+  #sel-icon { font-size: 24px; }
+  #sel-name { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: #ffd700; }
+  #sel-meta { font-size: 12px; color: #9ca3af; }
+
+  #action-row { display: flex; align-items: center; gap: 10px; }
+
+  #play-btn {
+    flex: 1; padding: 13px 20px;
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+    color: white; border: none; border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700;
+    letter-spacing: 0.05em; cursor: pointer; transition: all 0.25s;
+    text-transform: uppercase;
+  }
+  #play-btn:not(:disabled):hover {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(124,58,237,0.4);
+  }
+  #play-btn:disabled { background: rgba(255,255,255,0.08); color: #4b5563; cursor: not-allowed; }
+  #play-btn.syncing {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+    color: white !important; animation: pulse 1.2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.7} }
+
+  #sync-log {
+    font-size: 11px; color: #6b7280; margin-top: 8px;
+    min-height: 16px; font-family: monospace;
+  }
+  #sync-bar { width: 100%; height: 3px; margin-top: 6px; display: none;
+    accent-color: #a78bfa; border-radius: 2px; }
+</style>
+</head>
+<body>
+  <div id="bg"></div>
+  <div id="overlay"></div>
+
+  <div id="app">
+    <div id="header">
+      <div class="logo-block">
+        <div class="logo-icon">⚡</div>
+        <div>
+          <div class="logo-text">PokéLauncher</div>
+          <div class="logo-sub">Cobblemon Edition</div>
+        </div>
+      </div>
+      <div id="auth-block">
+        <button id="login-btn">
+          <svg width="16" height="16" viewBox="0 0 21 21" fill="none">
+            <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
+            <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
+            <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
+            <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+          </svg>
+          Connexion Microsoft
+        </button>
+        <div id="user-pill">
+          <div class="user-dot"></div>
+          <span id="username-label">Joueur</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="section-title">Sélectionner un modpack</div>
+    <div id="catalog-status">Chargement des modpacks...</div>
+    <div id="packs-grid"></div>
+
+    <div id="bottom">
+      <div id="selected-info">
+        <div id="sel-icon">🎮</div>
+        <div>
+          <div id="sel-name">Aucun modpack sélectionné</div>
+          <div id="sel-meta">Choisissez un modpack ci-dessus</div>
+        </div>
+      </div>
+      <div id="action-row">
+        <button id="play-btn" disabled>JOUER</button>
+      </div>
+      <div id="sync-log"></div>
+      <progress id="sync-bar" value="0" max="100"></progress>
+    </div>
+  </div>
+
+<script>
+  let selectedPack = null;
+  let isLoggedIn = false;
+
+  async function loadCatalog() {
+    const result = await window.api.getCatalog();
+    const grid = document.getElementById('packs-grid');
+    const status = document.getElementById('catalog-status');
+
+    if (!result.success) {
+      status.textContent = "Erreur : " + result.error;
+      return;
+    }
+
+    status.style.display = 'none';
+
+    result.catalog.modpacks.forEach(pack => {
+      const card = document.createElement('div');
+      card.className = 'pack-card';
+      card.innerHTML = `
+        <div class="selected-badge">✓</div>
+        <div class="pack-img-wrap">
+          <img src="${pack.icon_url}" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" alt="">
+          <span class="pack-emoji" style="display:none">🎮</span>
+        </div>
+        <div class="pack-name">${pack.name}</div>
+        <div class="pack-desc">${pack.description}</div>
+        <div class="pack-meta">
+          <span class="pack-tag mc">MC ${pack.minecraft}</span>
+          <span class="pack-tag">${pack.loader}</span>
+          <span class="pack-tag">v${pack.version}</span>
+        </div>
+      `;
+      card.addEventListener('click', () => selectPack(pack, card));
+      grid.appendChild(card);
+    });
+  }
+
+  function selectPack(pack, card) {
+    document.querySelectorAll('.pack-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    selectedPack = pack;
+    document.getElementById('sel-icon').textContent = '⚡';
+    document.getElementById('sel-name').textContent = pack.name;
+    document.getElementById('sel-meta').textContent = 'Minecraft ' + pack.minecraft + ' · ' + pack.loader + ' · v' + pack.version;
+    updatePlayBtn();
+  }
+
+  function updatePlayBtn() {
+    const btn = document.getElementById('play-btn');
+    if (selectedPack && isLoggedIn) {
+      btn.disabled = false;
+      btn.textContent = 'JOUER — ' + selectedPack.name.toUpperCase();
+    } else if (!isLoggedIn) {
+      btn.disabled = true;
+      btn.textContent = 'CONNECTEZ-VOUS POUR JOUER';
+    } else {
+      btn.disabled = true;
+      btn.textContent = 'SÉLECTIONNER UN MODPACK';
+    }
+  }
+
+  document.getElementById('login-btn').addEventListener('click', () => {
+    document.getElementById('login-btn').textContent = 'Connexion...';
+    document.getElementById('login-btn').disabled = true;
+    window.api.loginMicrosoft();
+  });
+
+  window.api.onAuthSuccess((data) => {
+    document.getElementById('login-btn').style.display = 'none';
+    const pill = document.getElementById('user-pill');
+    pill.style.display = 'flex';
+    document.getElementById('username-label').textContent = data.name;
+    isLoggedIn = true;
+    updatePlayBtn();
+  });
+
+  window.api.onAuthError((data) => {
+    const btn = document.getElementById('login-btn');
+    btn.disabled = false;
+    btn.textContent = 'Réessayer';
+  });
+
+  window.api.onSyncStatus((data) => {
+    document.getElementById('sync-log').textContent = data.message;
+  });
+
+  window.api.onSyncProgress((data) => {
+    const bar = document.getElementById('sync-bar');
+    bar.style.display = 'block';
+    bar.value = data.pct;
+    document.getElementById('sync-log').textContent = data.fileName + ' — ' + data.pct + '%';
+    if (data.pct >= 100) setTimeout(() => { bar.style.display = 'none'; }, 1000);
+  });
+
+  document.getElementById('play-btn').addEventListener('click', () => {
+    if (!selectedPack) return;
+    const btn = document.getElementById('play-btn');
+    btn.disabled = true;
+    btn.classList.add('syncing');
+    btn.textContent = 'SYNCHRONISATION...';
+    document.getElementById('sync-log').textContent = 'Vérification des mods...';
+    window.api.launchGame(selectedPack);
+  });
+
+  loadCatalog();
+</script>
+</body>
+</html>
