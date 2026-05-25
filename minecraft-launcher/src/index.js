@@ -4,7 +4,7 @@ const fs = require('fs');
 const https = require('https');
 const { Client } = require('minecraft-launcher-core');
 const { Auth } = require('msmc');
-const { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks } = require('./modSync');
+const { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks, syncResourcepacks } = require('./modSync');
 
 const launcher = new Client();
 let mcToken = null;
@@ -83,11 +83,12 @@ ipcMain.on('login-microsoft', async (event) => {
 ipcMain.on('open-folder', (event, type) => {
     const baseDir = path.join(app.getPath('userData'), 'instances');
     const dirs = {
-        mods:        path.join(baseDir, 'pack_cobblemon', 'mods'),
-        datapacks:   path.join(baseDir, 'pack_cobblemon', 'global_packs', 'required_data'),
-        shaderpacks: path.join(baseDir, 'pack_cobblemon', 'shaderpacks'),
-        screenshots: path.join(baseDir, 'pack_cobblemon', 'screenshots'),
-        game:        path.join(baseDir, 'pack_cobblemon')
+        mods:          path.join(baseDir, 'pack_cobblemon', 'mods'),
+        datapacks:     path.join(baseDir, 'pack_cobblemon', 'global_packs', 'required_data'),
+        shaderpacks:   path.join(baseDir, 'pack_cobblemon', 'shaderpacks'),
+        resourcepacks: path.join(baseDir, 'pack_cobblemon', 'resourcepacks'),
+        screenshots:   path.join(baseDir, 'pack_cobblemon', 'screenshots'),
+        game:          path.join(baseDir, 'pack_cobblemon')
     };
     const target = dirs[type] || dirs.game;
     if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
@@ -157,6 +158,7 @@ ipcMain.on('launch-game', async (event, packData) => {
     const modsDir = path.join(gameDir, 'mods');
     const datapacksDir = path.join(gameDir, 'global_packs', 'required_data');
     const shaderpacksDir = path.join(gameDir, 'shaderpacks');
+    const resourcepacksDir = path.join(gameDir, 'resourcepacks');
 
     // 1. SYNC MODS
     try {
@@ -202,11 +204,26 @@ ipcMain.on('launch-game', async (event, packData) => {
         }
     }
 
-    // 4. SERVERS.DAT
+    // 4. SYNC RESOURCEPACKS
+    if (packData.resourcepacks_manifest_url) {
+        try {
+            await syncResourcepacks(
+                packData.resourcepacks_manifest_url, resourcepacksDir,
+                (msg) => event.sender.send('sync-status', { message: msg }),
+                (fileName, received, total) => event.sender.send('sync-progress', {
+                    fileName, pct: Math.round((received / total) * 100)
+                })
+            );
+        } catch (err) {
+            event.sender.send('sync-status', { message: "Avertissement resource packs : " + err.message });
+        }
+    }
+
+    // 5. SERVERS.DAT
     event.sender.send('sync-status', { message: "Configuration serveur multijoueur..." });
     await setupServersDat(gameDir, packData.servers_dat_url);
 
-    // 5. ASSEMBLAGE .part
+    // 6. ASSEMBLAGE .part
     try {
         const allFiles = fs.readdirSync(modsDir);
         for (const part00 of allFiles.filter(f => f.endsWith('.part00'))) {
@@ -228,7 +245,7 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
-    // 6. LANCEMENT
+    // 7. LANCEMENT
     const opts = {
         authorization: mcToken.mclc(),
         root: gameDir,

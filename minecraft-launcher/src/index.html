@@ -80,7 +80,6 @@
   <div id="bg"></div>
   <div id="overlay"></div>
 
-  <!-- SETTINGS PANEL -->
   <div id="settings-panel">
     <div class="settings-box">
       <div class="settings-title">
@@ -106,6 +105,9 @@
         </button>
         <button class="folder-btn" id="btn-open-shaderpacks">
           <span class="folder-icon">✨</span> Ouvrir le dossier shaderpacks
+        </button>
+        <button class="folder-btn" id="btn-open-resourcepacks">
+          <span class="folder-icon">🎨</span> Ouvrir le dossier resource packs
         </button>
         <button class="folder-btn" id="btn-open-screenshots">
           <span class="folder-icon">📷</span> Ouvrir les screenshots
@@ -186,6 +188,7 @@
   document.getElementById('btn-open-mods').addEventListener('click', () => window.api.openFolder('mods'));
   document.getElementById('btn-open-datapacks').addEventListener('click', () => window.api.openFolder('datapacks'));
   document.getElementById('btn-open-shaderpacks').addEventListener('click', () => window.api.openFolder('shaderpacks'));
+  document.getElementById('btn-open-resourcepacks').addEventListener('click', () => window.api.openFolder('resourcepacks'));
   document.getElementById('btn-open-screenshots').addEventListener('click', () => window.api.openFolder('screenshots'));
   document.getElementById('btn-open-game').addEventListener('click', () => window.api.openFolder('game'));
 

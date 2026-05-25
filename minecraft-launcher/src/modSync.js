@@ -131,4 +131,8 @@ async function syncShaderpacks(manifestUrl, shaderpacksDir, onStatus, onProgress
     return await syncFiles(manifestUrl, shaderpacksDir, "Shaders", onStatus, onProgress);
 }
 
-module.exports = { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks };
+async function syncResourcepacks(manifestUrl, resourcepacksDir, onStatus, onProgress) {
+    return await syncFiles(manifestUrl, resourcepacksDir, "Resource Packs", onStatus, onProgress);
+}
+
+module.exports = { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks, syncResourcepacks };
