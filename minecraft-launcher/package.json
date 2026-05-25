@@ -1,20 +1,16 @@
 {
   "name": "minecraft-launcher",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "electron ."
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "axios": "^1.16.1",
-    "electron": "^42.2.0",
     "electron-log": "^5.4.4",
     "fs-extra": "^11.3.5",
-    "minecraft-launcher-core": "^3.18.2"
+    "minecraft-launcher-core": "^3.18.2",
+    "msmc": "^4.1.0",
+    "node-fetch": "^2.7.0"
   }
 }
