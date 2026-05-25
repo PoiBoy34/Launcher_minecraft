@@ -29,7 +29,7 @@ for modpack_dir in modpacks/*/; do
   if [ "$MODPACK_NAME" = "Cobblemon" ]; then
     echo '    {
       "name": "Cobblemon-fabric-1.7.3+1.21.1.jar",
-      "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/v1.0/Cobblemon-fabric-1.7.3+1.21.1.jar",
+      "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/Cobblemon-fabric-1.7.3+1.21.1.jar",
       "sha1": "f192cda3fdfec0f20d1dee1887ec1b9e77b1618c"
     }' >> "$MANIFEST_FILE"
     FIRST_FILE=false # Le premier fichier est déjà écrit
