@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { Client } = require('minecraft-launcher-core');
 const { Auth } = require('msmc');
-const { fetchCatalog, syncMods } = require('./modSync');
+const { fetchCatalog, syncMods, syncDatapacks } = require('./modSync');
 
 const launcher = new Client();
 let mcToken = null;
@@ -56,28 +56,17 @@ function assembleParts(modsDir, baseName, onStatus) {
     return new Promise((resolve, reject) => {
         const finalPath = path.join(modsDir, baseName);
         const writeStream = fs.createWriteStream(finalPath);
-
         let idx = 0;
         function writeNext() {
             const partPath = path.join(modsDir, `${baseName}.part${String(idx).padStart(2, '0')}`);
-            if (!fs.existsSync(partPath)) {
-                writeStream.end();
-                return;
-            }
+            if (!fs.existsSync(partPath)) { writeStream.end(); return; }
             const data = fs.readFileSync(partPath);
             const canContinue = writeStream.write(data);
             idx++;
-            if (canContinue) {
-                writeNext();
-            } else {
-                writeStream.once('drain', writeNext);
-            }
+            if (canContinue) { writeNext(); }
+            else { writeStream.once('drain', writeNext); }
         }
-
-        writeStream.on('finish', () => {
-            onStatus('Assemblé : ' + baseName);
-            resolve();
-        });
+        writeStream.on('finish', () => { onStatus('Assemblé : ' + baseName); resolve(); });
         writeStream.on('error', reject);
         writeNext();
     });
@@ -91,63 +80,72 @@ ipcMain.on('launch-game', async (event, packData) => {
 
     const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
     const modsDir = path.join(gameDir, 'mods');
+    const datapacksDir = path.join(gameDir, 'datapacks');
 
-    // 1. SYNCHRONISATION
+    // 1. SYNC MODS
     try {
         await syncMods(
             packData.manifest_url,
             modsDir,
             (msg) => event.sender.send('sync-status', { message: msg }),
             (fileName, received, total) => event.sender.send('sync-progress', {
-                fileName,
-                pct: Math.round((received / total) * 100)
+                fileName, pct: Math.round((received / total) * 100)
             })
         );
     } catch (err) {
-        event.sender.send('launch-error', "Erreur sync : " + err.message);
+        event.sender.send('launch-error', "Erreur sync mods : " + err.message);
         return;
     }
 
-    // 2. ASSEMBLAGE des .part
+    // 2. SYNC DATAPACKS
+    if (packData.datapacks_manifest_url) {
+        try {
+            await syncDatapacks(
+                packData.datapacks_manifest_url,
+                datapacksDir,
+                (msg) => event.sender.send('sync-status', { message: msg }),
+                (fileName, received, total) => event.sender.send('sync-progress', {
+                    fileName, pct: Math.round((received / total) * 100)
+                })
+            );
+        } catch (err) {
+            console.error("Erreur sync datapacks :", err);
+            event.sender.send('sync-status', { message: "Avertissement datapacks : " + err.message });
+        }
+    }
+
+    // 3. ASSEMBLAGE .part
     try {
         const allFiles = fs.readdirSync(modsDir);
         const part00Files = allFiles.filter(f => f.endsWith('.part00'));
-
         for (const part00 of part00Files) {
             const baseName = part00.replace('.part00', '');
             const finalPath = path.join(modsDir, baseName);
-
             const partPaths = allFiles
                 .filter(f => f.startsWith(baseName + '.part'))
                 .map(f => path.join(modsDir, f));
-
             const totalPartsSize = partPaths.reduce((sum, p) => sum + fs.statSync(p).size, 0);
             const needsAssembly = !fs.existsSync(finalPath) ||
                 fs.statSync(finalPath).size !== totalPartsSize;
-
             if (needsAssembly) {
                 event.sender.send('sync-status', { message: 'Assemblage : ' + baseName + '...' });
                 await assembleParts(modsDir, baseName, (msg) =>
                     event.sender.send('sync-status', { message: msg })
                 );
-            } else {
-                event.sender.send('sync-status', { message: 'Déjà assemblé : ' + baseName });
             }
         }
     } catch (err) {
-        console.error("Erreur assemblage :", err);
         event.sender.send('launch-error', "Erreur assemblage : " + err.message);
         return;
     }
 
-    // 3. LANCEMENT
+    // 4. LANCEMENT
     const opts = {
         authorization: mcToken.mclc(),
         root: gameDir,
         version: { number: packData.minecraft, type: "release" },
         memory: { max: "4G", min: "2G" }
     };
-
     try {
         event.sender.send('sync-status', { message: "Démarrage de Minecraft..." });
         await launcher.launch(opts);

@@ -1,0 +1,55 @@
+{
+  "version": "1.0.0",
+  "files": [
+    {
+      "name": "COBBLEVERSE - No Ender Dragon.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/COBBLEVERSE - No Ender Dragon.zip",
+      "sha1": "844dfb2b684277e62e90e46b2f8c479f22fd2b17"
+    },
+    {
+      "name": "COBBLEVERSE - No Hunger.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/COBBLEVERSE - No Hunger.zip",
+      "sha1": "7d9f0f02379471fbefe8daadf1614c48eadd049a"
+    },
+    {
+      "name": "COBBLEVERSE-DP-v28.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/COBBLEVERSE-DP-v28.zip",
+      "sha1": "c0a5522b5cc7e1f616cac4b06538f5e3ddfc6bd0"
+    },
+    {
+      "name": "COBBLEVERSE-Hoenn-DP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/COBBLEVERSE-Hoenn-DP.zip",
+      "sha1": "4b5491703ef4aa7d05d266f8707f713b5e64982d"
+    },
+    {
+      "name": "COBBLEVERSE-Johto-DP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/COBBLEVERSE-Johto-DP.zip",
+      "sha1": "83b75f9671c9ab7f149257f58b5c276c4e418648"
+    },
+    {
+      "name": "COBBLEVERSE-Loot-DP-v11.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/COBBLEVERSE-Loot-DP-v11.zip",
+      "sha1": "bd9fc07140300680750d0fd20fa84039e0a687a4"
+    },
+    {
+      "name": "COBBLEVERSE-RCT-DP-v18.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/COBBLEVERSE-RCT-DP-v18.zip",
+      "sha1": "6ca3f2339600a9fb6d0907c99d225e88dc22b823"
+    },
+    {
+      "name": "COBBLEVERSE-Sinnoh-DP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/COBBLEVERSE-Sinnoh-DP.zip",
+      "sha1": "6e7856ee5012b195111d6aea5f962d03f33932f7"
+    },
+    {
+      "name": "PokeCenterPCs-DP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/PokeCenterPCs-DP.zip",
+      "sha1": "a3bf9ab2d7ce1e1893864421d64be35ac9d5a4d6"
+    },
+    {
+      "name": "Terralith-DP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks/Terralith-DP.zip",
+      "sha1": "fc1349e387e480bec84c6813d1d75e85c3a5ac4f"
+    }
+  ]
+}

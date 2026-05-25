@@ -76,32 +76,26 @@ async function fetchCatalog() {
     return await fetchJSON(getCatalogUrl());
 }
 
-async function syncMods(manifestUrl, modsDir, onStatus, onProgress) {
-    onStatus("Récupération du manifest...");
+async function syncFiles(manifestUrl, destDir, label, onStatus, onProgress) {
+    onStatus("Récupération " + label + "...");
     const manifest = await fetchJSON(getUrl(manifestUrl));
 
-    fs.mkdirSync(modsDir, { recursive: true });
+    fs.mkdirSync(destDir, { recursive: true });
 
     const expectedFiles = new Set(manifest.files.map(f => f.name));
-
-    // Nettoyage — on garde les .part et les .jar assemblés depuis des .part
-    for (const existing of fs.readdirSync(modsDir)) {
+    for (const existing of fs.readdirSync(destDir)) {
         if (existing.includes('.part')) continue;
-
-        const isAssembled = fs.readdirSync(modsDir)
-            .some(f => f === existing + '.part00');
+        const isAssembled = fs.readdirSync(destDir).some(f => f === existing + '.part00');
         if (isAssembled) continue;
-
         if (!expectedFiles.has(existing)) {
-            fs.unlinkSync(path.join(modsDir, existing));
+            fs.unlinkSync(path.join(destDir, existing));
             onStatus("Supprimé : " + existing);
         }
     }
 
-    // Téléchargement
     for (let i = 0; i < manifest.files.length; i++) {
         const file = manifest.files[i];
-        const destPath = path.join(modsDir, file.name);
+        const destPath = path.join(destDir, file.name);
 
         let needsDownload = true;
         if (fs.existsSync(destPath)) {
@@ -111,7 +105,7 @@ async function syncMods(manifestUrl, modsDir, onStatus, onProgress) {
         }
 
         if (needsDownload) {
-            onStatus("Téléchargement (" + (i + 1) + "/" + manifest.files.length + ") : " + file.name);
+            onStatus(label + " (" + (i + 1) + "/" + manifest.files.length + ") : " + file.name);
             await downloadFile(file.url, destPath, (received, total) => {
                 onProgress(file.name, received, total);
             });
@@ -121,8 +115,16 @@ async function syncMods(manifestUrl, modsDir, onStatus, onProgress) {
         }
     }
 
-    onStatus("Mods synchronisés ✓");
+    onStatus(label + " synchronisés ✓");
     return manifest;
 }
 
-module.exports = { fetchCatalog, syncMods };
+async function syncMods(manifestUrl, modsDir, onStatus, onProgress) {
+    return await syncFiles(manifestUrl, modsDir, "Mods", onStatus, onProgress);
+}
+
+async function syncDatapacks(manifestUrl, datapacksDir, onStatus, onProgress) {
+    return await syncFiles(manifestUrl, datapacksDir, "Datapacks", onStatus, onProgress);
+}
+
+module.exports = { fetchCatalog, syncMods, syncDatapacks };
