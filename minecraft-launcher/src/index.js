@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
@@ -80,6 +80,20 @@ ipcMain.on('login-microsoft', async (event) => {
     }
 });
 
+ipcMain.on('open-folder', (event, type) => {
+    const baseDir = path.join(app.getPath('userData'), 'instances');
+    const dirs = {
+        mods:        path.join(baseDir, 'pack_cobblemon', 'mods'),
+        datapacks:   path.join(baseDir, 'pack_cobblemon', 'datapacks'),
+        shaderpacks: path.join(baseDir, 'pack_cobblemon', 'shaderpacks'),
+        screenshots: path.join(baseDir, 'pack_cobblemon', 'screenshots'),
+        game:        path.join(baseDir, 'pack_cobblemon')
+    };
+    const target = dirs[type] || dirs.game;
+    if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
+    shell.openPath(target);
+});
+
 function assembleParts(modsDir, baseName, onStatus) {
     return new Promise((resolve, reject) => {
         const finalPath = path.join(modsDir, baseName);
@@ -103,7 +117,8 @@ function assembleParts(modsDir, baseName, onStatus) {
 function fetchWithRedirect(url) {
     return new Promise((resolve, reject) => {
         https.get(url, { headers: { 'User-Agent': 'minecraft-launcher' } }, (res) => {
-            if (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307 || res.statusCode === 308) {
+            if (res.statusCode === 301 || res.statusCode === 302 ||
+                res.statusCode === 307 || res.statusCode === 308) {
                 fetchWithRedirect(res.headers.location).then(resolve).catch(reject);
                 return;
             }
@@ -137,6 +152,7 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
+    const ram = packData.ram || 4;
     const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
     const modsDir = path.join(gameDir, 'mods');
     const datapacksDir = path.join(gameDir, 'datapacks');
@@ -196,11 +212,15 @@ ipcMain.on('launch-game', async (event, packData) => {
         for (const part00 of allFiles.filter(f => f.endsWith('.part00'))) {
             const baseName = part00.replace('.part00', '');
             const finalPath = path.join(modsDir, baseName);
-            const partPaths = allFiles.filter(f => f.startsWith(baseName + '.part')).map(f => path.join(modsDir, f));
+            const partPaths = allFiles
+                .filter(f => f.startsWith(baseName + '.part'))
+                .map(f => path.join(modsDir, f));
             const totalPartsSize = partPaths.reduce((sum, p) => sum + fs.statSync(p).size, 0);
             if (!fs.existsSync(finalPath) || fs.statSync(finalPath).size !== totalPartsSize) {
                 event.sender.send('sync-status', { message: 'Assemblage : ' + baseName + '...' });
-                await assembleParts(modsDir, baseName, (msg) => event.sender.send('sync-status', { message: msg }));
+                await assembleParts(modsDir, baseName, (msg) =>
+                    event.sender.send('sync-status', { message: msg })
+                );
             }
         }
     } catch (err) {
@@ -213,7 +233,7 @@ ipcMain.on('launch-game', async (event, packData) => {
         authorization: mcToken.mclc(),
         root: gameDir,
         version: { number: packData.minecraft, type: "release" },
-        memory: { max: "4G", min: "2G" }
+        memory: { max: ram + "G", min: "2G" }
     };
     try {
         event.sender.send('sync-status', { message: "Démarrage de Minecraft..." });

@@ -56,11 +56,67 @@
   @keyframes btnpulse { 0%,100%{opacity:1}50%{opacity:0.7} }
   #sync-log { font-size: 11px; color: #6b7280; margin-top: 8px; min-height: 16px; font-family: monospace; }
   #sync-bar { width: 100%; height: 3px; margin-top: 6px; display: none; accent-color: #a78bfa; }
+
+  /* SETTINGS PANEL */
+  #settings-btn { width: 42px; height: 42px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; color: #9ca3af; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  #settings-btn:hover { background: rgba(255,255,255,0.12); color: #e2e8f0; }
+  #settings-panel { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
+  #settings-panel.open { display: flex; }
+  .settings-box { background: #0f0f2a; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 28px; width: 420px; max-width: 90vw; }
+  .settings-title { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: #ffd700; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+  .settings-close { background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; padding: 0; line-height: 1; }
+  .settings-close:hover { color: #e2e8f0; }
+  .settings-section { margin-bottom: 20px; }
+  .settings-label { font-size: 12px; color: #a78bfa; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+  .ram-row { display: flex; align-items: center; gap: 12px; }
+  .ram-row input[type=range] { flex: 1; accent-color: #7c3aed; }
+  .ram-value { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: #ffd700; min-width: 60px; text-align: right; }
+  .folder-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #cbd5e1; cursor: pointer; font-size: 13px; font-family: 'Exo 2', sans-serif; transition: all 0.2s; margin-bottom: 8px; }
+  .folder-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(168,139,250,0.4); color: #fff; }
+  .folder-btn .folder-icon { font-size: 16px; }
 </style>
 </head>
 <body>
   <div id="bg"></div>
   <div id="overlay"></div>
+
+  <!-- SETTINGS PANEL -->
+  <div id="settings-panel">
+    <div class="settings-box">
+      <div class="settings-title">
+        ⚙️ Paramètres
+        <button class="settings-close" id="settings-close">✕</button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">Mémoire RAM allouée</div>
+        <div class="ram-row">
+          <input type="range" id="ram-slider" min="2" max="16" step="1" value="4">
+          <div class="ram-value"><span id="ram-display">4</span> Go</div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label">Dossiers du jeu</div>
+        <button class="folder-btn" id="btn-open-mods">
+          <span class="folder-icon">📦</span> Ouvrir le dossier mods
+        </button>
+        <button class="folder-btn" id="btn-open-datapacks">
+          <span class="folder-icon">🗂️</span> Ouvrir le dossier datapacks
+        </button>
+        <button class="folder-btn" id="btn-open-shaderpacks">
+          <span class="folder-icon">✨</span> Ouvrir le dossier shaderpacks
+        </button>
+        <button class="folder-btn" id="btn-open-screenshots">
+          <span class="folder-icon">📷</span> Ouvrir les screenshots
+        </button>
+        <button class="folder-btn" id="btn-open-game">
+          <span class="folder-icon">📁</span> Ouvrir le dossier du jeu
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="app">
     <div id="header">
       <div class="logo-block">
@@ -78,9 +134,11 @@
         </div>
       </div>
     </div>
+
     <div id="section-title">Sélectionner un modpack</div>
     <div id="catalog-status">Chargement des modpacks...</div>
     <div id="packs-grid"></div>
+
     <div id="bottom">
       <div id="selected-info">
         <div id="sel-icon">🎮</div>
@@ -91,14 +149,45 @@
       </div>
       <div id="action-row">
         <button id="play-btn" disabled>SÉLECTIONNER UN MODPACK</button>
+        <button id="settings-btn" title="Paramètres">⚙️</button>
       </div>
       <div id="sync-log"></div>
       <progress id="sync-bar" value="0" max="100"></progress>
     </div>
   </div>
+
 <script>
   let selectedPack = null;
   let isLoggedIn = false;
+  let ramValue = parseInt(localStorage.getItem('ram') || '4');
+
+  // Init RAM slider
+  document.getElementById('ram-slider').value = ramValue;
+  document.getElementById('ram-display').textContent = ramValue;
+  document.getElementById('ram-slider').addEventListener('input', (e) => {
+    ramValue = parseInt(e.target.value);
+    document.getElementById('ram-display').textContent = ramValue;
+    localStorage.setItem('ram', ramValue);
+  });
+
+  // Settings panel
+  document.getElementById('settings-btn').addEventListener('click', () => {
+    document.getElementById('settings-panel').classList.add('open');
+  });
+  document.getElementById('settings-close').addEventListener('click', () => {
+    document.getElementById('settings-panel').classList.remove('open');
+  });
+  document.getElementById('settings-panel').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('settings-panel'))
+      document.getElementById('settings-panel').classList.remove('open');
+  });
+
+  // Boutons dossiers
+  document.getElementById('btn-open-mods').addEventListener('click', () => window.api.openFolder('mods'));
+  document.getElementById('btn-open-datapacks').addEventListener('click', () => window.api.openFolder('datapacks'));
+  document.getElementById('btn-open-shaderpacks').addEventListener('click', () => window.api.openFolder('shaderpacks'));
+  document.getElementById('btn-open-screenshots').addEventListener('click', () => window.api.openFolder('screenshots'));
+  document.getElementById('btn-open-game').addEventListener('click', () => window.api.openFolder('game'));
 
   async function loadCatalog() {
     const result = await window.api.getCatalog();
@@ -165,7 +254,7 @@
     btn.textContent = 'SYNCHRONISATION...';
     document.getElementById('sync-log').style.color = "#6b7280";
     document.getElementById('sync-log').textContent = 'Vérification des mods...';
-    window.api.launchGame(selectedPack);
+    window.api.launchGame({ ...selectedPack, ram: ramValue });
   });
 
   window.api.onAuthSuccess((data) => {
