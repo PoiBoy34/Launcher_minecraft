@@ -1,0 +1,25 @@
+filename = 'fightorflight-fabric-0.10.7.jar'
+name = 'Cobblemon Fight or Flight Reborn'
+side = 'both'
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.1' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '0.10.7'
+
+[download]
+hash = '23befa6dedd95f0f0ebcb716fbe661cd7b25dff838e23e193eece57b1f3a49d96a13b9c8777c881ddfcd9f6a7568d668e2c40a507053499f85a1fc510b233cbd'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/cTdIg5HZ/versions/glCpkfTv/fightorflight-fabric-0.10.7.jar'
+
+[update.modrinth]
+mod-id = 'cTdIg5HZ'
+version = 'glCpkfTv'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'lhGA9TYQ'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'MdwFAVRL'
+type = 'REQUIRED'

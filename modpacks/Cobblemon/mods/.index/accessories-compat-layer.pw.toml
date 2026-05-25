@@ -1,0 +1,33 @@
+filename = 'accessories_compat_layer-fabric-0.1.12+1.21.1.jar'
+name = 'Accessories Compatibility Layer'
+side = 'both'
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.1' ]
+x-prismlauncher-release-type = 'beta'
+x-prismlauncher-version-number = '0.1.12'
+
+[download]
+hash = 'aee7f01996f4675df73018691fabc2d155a5c5865129b38479beefb8648b2a55598b07488f3546892ca8e215aaf436892457aedade81b185a3438c7fb9bedc9a'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/ySnjMzLg/versions/pWxabbaf/accessories_compat_layer-fabric-0.1.12%2B1.21.1.jar'
+
+[update.modrinth]
+mod-id = 'ySnjMzLg'
+version = 'pWxabbaf'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'TkWgV1AW'
+type = 'INCOMPATIBLE'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'ccKDOlHs'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = '5aaWibi9'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'jtmvUHXj'
+type = 'REQUIRED'

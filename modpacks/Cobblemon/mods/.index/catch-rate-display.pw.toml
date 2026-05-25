@@ -1,0 +1,29 @@
+filename = 'catchrate-display-fabric-2.8.22.jar'
+name = 'Cobblemon Catch Rate Display'
+side = 'client'
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21', '1.21.1' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '2.8.22+fabric'
+
+[download]
+hash = '1c92ca05ff0defbc573f0abb15e0e9c0a6d0a7189384f15e01884d019aa93eef2107ae08eedfe37c8a2ef84c7972e87e83e63d507e352ec9817e5d032a3298aa'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/vADO40xp/versions/4MuGKLQg/catchrate-display-fabric-2.8.22.jar'
+
+[update.modrinth]
+mod-id = 'vADO40xp'
+version = '4MuGKLQg'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'MdwFAVRL'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'Ha28R6CL'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'

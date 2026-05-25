@@ -1,0 +1,25 @@
+filename = 'itemcommander-1.7.0-pre.2+1.21.1.jar'
+name = 'Item Commander'
+side = 'server'
+x-prismlauncher-loaders = [ 'quilt', 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21', '1.21.1' ]
+x-prismlauncher-release-type = 'beta'
+x-prismlauncher-version-number = '1.7.0-pre.2+1.21.1'
+
+[download]
+hash = 'a18edc5e1aad9dc71b9c153b6d3cd325efae1702cc9b47854081c4856c1cf3ab91a3bbe0d8dc417331ee2410c336af5dfc7fcc7a4bf3259f6d6c9366f8323d83'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/VUnrj0Dx/versions/s3nDBoi9/itemcommander-1.7.0-pre.2%2B1.21.1.jar'
+
+[update.modrinth]
+mod-id = 'VUnrj0Dx'
+version = 's3nDBoi9'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'eXts2L7r'
+type = 'OPTIONAL'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'Vebnzrzj'
+type = 'OPTIONAL'

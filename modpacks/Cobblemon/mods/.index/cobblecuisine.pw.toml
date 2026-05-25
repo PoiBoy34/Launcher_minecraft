@@ -1,0 +1,25 @@
+filename = 'cobblecuisine-2.0.1-1.7.rc1.jar'
+name = 'CobbleCuisine'
+side = 'both'
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.1' ]
+x-prismlauncher-release-type = 'alpha'
+x-prismlauncher-version-number = '2.0.1-1.7-rc1'
+
+[download]
+hash = '7fe69d9a90a4f1f19e3a121b0c499f26ba0ca9245ca409b4f8888c42ea810c49afeb9375e73fa840a0f23ac14e22a43233edffb65384389388f6cbbef8eeaf94'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/dlx62Wp3/versions/KQwSroDP/cobblecuisine-2.0.1-1.7-rc1.jar'
+
+[update.modrinth]
+mod-id = 'dlx62Wp3'
+version = 'KQwSroDP'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'MdwFAVRL'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'SszvX85I'
+type = 'REQUIRED'

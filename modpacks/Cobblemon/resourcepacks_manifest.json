@@ -43,9 +43,21 @@
     }
     ,
     {
+      "name": "Cobblemon Interface Modded.zip.rpo",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface%20Modded.zip.rpo",
+      "sha1": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f"
+    }
+    ,
+    {
       "name": "Cobblemon Interface.zip",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface.zip",
       "sha1": "f91aa128e036b579fc687e55f9b9a240e3fbf65a"
+    }
+    ,
+    {
+      "name": "Cobblemon Interface.zip.rpo",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface.zip.rpo",
+      "sha1": "def938ac2768e561115d6e2694e766604124f9aa"
     }
     ,
     {

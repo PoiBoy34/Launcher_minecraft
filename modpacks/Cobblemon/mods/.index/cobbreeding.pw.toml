@@ -1,0 +1,37 @@
+filename = 'Cobbreeding-fabric-2.2.0.jar'
+name = 'Cobbreeding'
+side = 'both'
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.1' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '2.2.0'
+
+[download]
+hash = '87a1853695fe3330afae4216b89c660a7dd5f663ad8dc646bbd5eb77763ec9288f77300448f3061443767d59ccb7e02a788e07370ddeeb2999a7cf9884632cf0'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/ItmVb4zY/versions/DcOPx56X/Cobbreeding-fabric-2.2.0.jar'
+
+[update.modrinth]
+mod-id = 'ItmVb4zY'
+version = 'DcOPx56X'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'MdwFAVRL'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = '9s6osm5g'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'lhGA9TYQ'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'mOgUt4GM'
+type = 'OPTIONAL'

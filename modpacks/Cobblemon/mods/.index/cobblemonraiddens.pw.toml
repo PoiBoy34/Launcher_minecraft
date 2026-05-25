@@ -1,0 +1,41 @@
+filename = 'cobblemonraiddens-fabric-0.7.6+1.21.1.jar'
+name = 'Cobblemon Raid Dens'
+side = 'both'
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.1' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '0.7.6+1.21.1'
+
+[download]
+hash = '202af31f9f9d7963d9a2424708f17447e8dd2aaefea887c8bf56cf2444b4e4d1591e9bc59b4b117c847faed8fa295488247480161551adbe28af20cb6d92d0f0'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/GebWh45l/versions/gBIUjkRF/cobblemonraiddens-fabric-0.7.6%2B1.21.1.jar'
+
+[update.modrinth]
+mod-id = 'GebWh45l'
+version = 'gBIUjkRF'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'SszvX85I'
+type = 'OPTIONAL'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'MdwFAVRL'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'nvQzSEkH'
+type = 'OPTIONAL'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'P7dR8mSH'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = '8BmcQJ2H'
+type = 'REQUIRED'
+
+[[x-prismlauncher-dependencies]]
+addonId = 's7N7AsqL'
+type = 'OPTIONAL'

@@ -1,0 +1,22 @@
+filename = 'cobblemon-trainer-battle-1.11.11+1.7.3.jar'
+name = 'Cobblemon Trainer Battle'
+side = 'both'
+x-prismlauncher-loaders = [ 'fabric' ]
+x-prismlauncher-mc-versions = [ '1.21.1' ]
+x-prismlauncher-release-type = 'release'
+x-prismlauncher-version-number = '1.11.11+1.7.3'
+
+[download]
+hash = 'e370def21804a37e11afe975f7a3e931a94be92ca590cbc78dafe2919fb3ecbf00b00dc8709b46ec812185cba03fef9ca78388f00a54ae174e3a18b72f4c2df6'
+hash-format = 'sha512'
+mode = 'url'
+url = 'https://cdn.modrinth.com/data/pwjgeBtv/versions/mI2OmNzi/cobblemon-trainer-battle-1.11.11%2B1.7.3.jar'
+
+[update.modrinth]
+mod-id = 'pwjgeBtv'
+version = 'mI2OmNzi'
+
+[[x-prismlauncher-dependencies]]
+addonId = 'MdwFAVRL'
+type = 'REQUIRED'
+version = 'kF7CvxTo'
