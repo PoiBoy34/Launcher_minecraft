@@ -1,9 +1,8 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron'); // Ajout de 'shell'
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const { Client } = require('minecraft-launcher-core');
 const { Auth } = require('msmc');
 const { fetchCatalog, syncMods } = require('./modSync');
-const { ensureJava } = require('./javaManager'); // Ajout du gestionnaire Java
 
 const launcher = new Client();
 let mcToken = null;
@@ -57,15 +56,7 @@ ipcMain.on('login-microsoft', async (event) => {
     }
 });
 
-// NOUVEAU : Ouvre le dossier du modpack dans l'explorateur de fichiers
-ipcMain.on('open-folder', (event, packId) => {
-    if (!packId) return;
-    const gameDir = path.join(app.getPath('userData'), 'instances', packId);
-    shell.openPath(gameDir).catch(err => console.error("Erreur ouverture dossier :", err));
-});
-
-// MODIFIÉ : Récupère packData ET ram
-ipcMain.on('launch-game', async (event, { packData, ram }) => {
+ipcMain.on('launch-game', async (event, packData) => {
     if (!mcToken) {
         event.sender.send('launch-error', "Lancement impossible : pas de token");
         return;
@@ -74,7 +65,6 @@ ipcMain.on('launch-game', async (event, { packData, ram }) => {
     const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
     const modsDir = path.join(gameDir, 'mods');
 
-    // 1. Sync mods
     try {
         await syncMods(
             packData.manifest_url,
@@ -94,29 +84,11 @@ ipcMain.on('launch-game', async (event, { packData, ram }) => {
         return;
     }
 
-    // 2. Vérification/Téléchargement de Java 21 automatique
-    let javaPath;
-    try {
-        event.sender.send('sync-status', { message: "Vérification de Java 21..." });
-        javaPath = await ensureJava(app.getPath('userData'), (msg) => {
-            event.sender.send('sync-status', { message: msg });
-        });
-    } catch (err) {
-        console.error("Erreur Java :", err);
-        event.sender.send('launch-error', "Erreur Java : " + err.message);
-        return;
-    }
-
-    // 3. Calcul de la RAM
-    const maxRam = ram ? `${ram}G` : "4G";
-    const minRam = ram ? `${Math.max(2, Math.floor(ram / 2))}G` : "2G";
-
     const opts = {
         authorization: mcToken.mclc(),
         root: gameDir,
         version: { number: packData.minecraft, type: "release" },
-        memory: { max: maxRam, min: minRam },
-        javaPath: javaPath // On injecte le chemin du Java téléchargé
+        memory: { max: "4G", min: "2G" }
     };
     
     try {
