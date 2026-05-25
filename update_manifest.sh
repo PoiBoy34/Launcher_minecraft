@@ -14,6 +14,7 @@ for modpack_dir in modpacks/*/; do
     local MANIFEST_FILE="modpacks/$MODPACK_NAME/$MANIFEST_NAME"
     local BASE_URL="https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/$MODPACK_NAME/$FOLDER_NAME"
 
+    # Si le dossier n'existe pas, on ignore
     if [ ! -d "$TARGET_DIR" ]; then
       return
     fi
@@ -35,11 +36,12 @@ for modpack_dir in modpacks/*/; do
       FIRST_FILE=false
     fi
 
-    # 2. Injection des gros Resource Packs Audio
+    # 2. Injection des gros Resource Packs Audio (Avec le bon lien !)
     if [ "$FOLDER_NAME" = "resourcepacks" ] && [ "$MODPACK_NAME" = "Cobblemon" ]; then
+      if [ "$FIRST_FILE" = false ]; then echo "    ," >> "$MANIFEST_FILE"; fi
       echo '    {
       "name": "COBBLEVERSE Soundtrack.zip",
-      "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/COBBLEVERSE%20Soundtrack.zip",
+      "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/COBBLEVERSE.Soundtrack.zip",
       "sha1": "b3a3d35c4e49e2dfee9c752b6287dcf107020708"
     },
     {
@@ -50,11 +52,17 @@ for modpack_dir in modpacks/*/; do
       FIRST_FILE=false
     fi
 
+    # 3. Boucle sur les fichiers locaux du dossier
     shopt -s nullglob
     for filepath in "$TARGET_DIR"/*; do
       if [ -f "$filepath" ]; then
         local filename=$(basename "$filepath")
         local hash=$(sha1sum "$filepath" | awk '{print $1}')
+        
+        # Sécurité : Encodage des espaces et crochets pour les fichiers classiques
+        local url_filename=${filename// /%20}
+        url_filename=${url_filename//\[/%5B}
+        url_filename=${url_filename//\]/%5D}
         
         if [ "$FIRST_FILE" = true ]; then
           FIRST_FILE=false
@@ -64,7 +72,7 @@ for modpack_dir in modpacks/*/; do
         
         echo '    {
       "name": "'"$filename"'",
-      "url": "'"$BASE_URL"'/'"$filename"'",
+      "url": "'"$BASE_URL"'/'"$url_filename"'",
       "sha1": "'"$hash"'"
     }' >> "$MANIFEST_FILE"
         echo " -> Ajouté : $filename"
