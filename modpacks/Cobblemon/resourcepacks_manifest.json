@@ -2,302 +2,174 @@
   "version": "1.0.0",
   "files": [
     {
-      "name": "COBBLEVERSE Soundtrack.zip",
-      "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/COBBLEVERSE.Soundtrack.zip",
-      "sha1": "b3a3d35c4e49e2dfee9c752b6287dcf107020708"
+      "name": "ATMxMSD RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/ATMxMSD%20RP.zip",
+      "sha1": "7614cecca22e7e2c4fea2675c4e8b152397f0476"
+    },
+    {
+      "name": "COBBLEVERSE RCTmod RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/COBBLEVERSE%20RCTmod%20RP.zip",
+      "sha1": "de695b3cd9a61e5db7a9c3fc82bf69ec7deecc1a"
+    },
+    {
+      "name": "COBBLEVERSE RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/COBBLEVERSE%20RP.zip",
+      "sha1": "a7620b8e266225fbe2472797f71283d11b6b9ed4"
+    },
+    {
+      "name": "Canon PC Wallpapers.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Canon%20PC%20Wallpapers.zip",
+      "sha1": "a86b33e6d4f782d4b8d5ae9e0ebfaea68c1746a0"
+    },
+    {
+      "name": "CavsCobbleMons RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/CavsCobbleMons%20RP.zip",
+      "sha1": "18a6e488ee0d8671632cb8941e052d5a7480185f"
+    },
+    {
+      "name": "Classic Grass.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Classic%20Grass.zip",
+      "sha1": "d4877aea86f2428b8399ae14ef00b8deb11e26de"
+    },
+    {
+      "name": "CobbleMotion RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/CobbleMotion%20RP.zip",
+      "sha1": "0f17006b0b161c106ce03c729cec518e8d5bbe1e"
+    },
+    {
+      "name": "Cobblemon Interface Modded.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface%20Modded.zip",
+      "sha1": "0599cd556bafd67537690ebe037bc7e4a88c2542"
+    },
+    {
+      "name": "Cobblemon Interface.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface.zip",
+      "sha1": "f91aa128e036b579fc687e55f9b9a240e3fbf65a"
+    },
+    {
+      "name": "Comforts Modernized.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Comforts%20Modernized.zip",
+      "sha1": "34cc0542c57aedc727ea5d3cf8947a14904caa3c"
+    },
+    {
+      "name": "E19 Cobblemon Minimap Icons.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/E19%20Cobblemon%20Minimap%20Icons.zip",
+      "sha1": "4ed272ac54c51710a8fef473b01f75805277afb6"
+    },
+    {
+      "name": "EeveelutionsReimagined RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/EeveelutionsReimagined%20RP.zip",
+      "sha1": "eb6e0ecfe1500ddebab3d68c6f664a6f2cfb0de3"
+    },
+    {
+      "name": "Emissive Cobblemon Ores.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Emissive%20Cobblemon%20Ores.zip",
+      "sha1": "8bb4afe1b3b1a3b2ec5edf14367cb29860197456"
+    },
+    {
+      "name": "Fresh Animations.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Fresh%20Animations.zip",
+      "sha1": "17d3630f0942e0d0d93f58fc998f780f06b81e63"
+    },
+    {
+      "name": "Fresh Icons.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Fresh%20Icons.zip",
+      "sha1": "b9ddfb4614220612c7492666db730393954435b8"
+    },
+    {
+      "name": "Fresh Moves.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Fresh%20Moves.zip",
+      "sha1": "7049cc12935ff4be20173c908ad946f530861a4c"
+    },
+    {
+      "name": "FullyHisuianStarters RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/FullyHisuianStarters%20RP.zip",
+      "sha1": "aec849f89f5351c30ef31da5d91691aebfaac590"
+    },
+    {
+      "name": "GlitchDex RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/GlitchDex%20RP.zip",
+      "sha1": "535eabe94e9f22095c31f0cd38610eeb8213ef33"
+    },
+    {
+      "name": "HydroReanimodel RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/HydroReanimodel%20RP.zip",
+      "sha1": "0634991d96f80f4cabec617e34d2c94fe606a06b"
+    },
+    {
+      "name": "LackingMons RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/LackingMons%20RP.zip",
+      "sha1": "12e8a567003637ddd85f775e639d2b9727ead4e6"
+    },
+    {
+      "name": "Low Fire.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Low%20Fire.zip",
+      "sha1": "1641441bde52529aab09b8688070872547c10a70"
+    },
+    {
+      "name": "MelloMons RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/MelloMons%20RP.zip",
+      "sha1": "e58c300d345e55659f659183ee8fb010812466b1"
+    },
+    {
+      "name": "MissingMons RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/MissingMons%20RP.zip",
+      "sha1": "db62eb35a78834978af62db36dd9381d5e8a1b41"
+    },
+    {
+      "name": "MundialMons RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/MundialMons%20RP.zip",
+      "sha1": "e26ede05c4d3201457338bc608843623dd16159b"
+    },
+    {
+      "name": "MysticMons RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/MysticMons%20RP.zip",
+      "sha1": "e4e6545d60efb2926d2065414a5d754f46567bb8"
+    },
+    {
+      "name": "OJsAnimations RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/OJsAnimations%20RP.zip",
+      "sha1": "dbb2abcac4632aae709b7aaed7871faef2bf5af5"
+    },
+    {
+      "name": "Original Pokemon Battle Music.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Original%20Pokemon%20Battle%20Music.zip",
+      "sha1": "ee0fce4ed8b046df2fbf707788dc674a290ae430"
+    },
+    {
+      "name": "PlanetaCobblemon RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/PlanetaCobblemon%20RP.zip",
+      "sha1": "2bf23262cfe5cc371cb742e97890e08c78fbb9a6"
+    },
+    {
+      "name": "PokeDiscs.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/PokeDiscs.zip",
+      "sha1": "f5421bb1a6bd1edecd00a4d1a0fdda2be27e3c11"
+    },
+    {
+      "name": "PokeRods3D.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/PokeRods3D.zip",
+      "sha1": "c5a92bf0d82abba72eb3a93f6e8bd40560d1c247"
+    },
+    {
+      "name": "Pokemans RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Pokemans%20RP.zip",
+      "sha1": "c3a00afd43fc81d650dc2123e5135e19c7f7b416"
+    },
+    {
+      "name": "TDmon RP.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/TDmon%20RP.zip",
+      "sha1": "b6c0816f934c34c7fe1c5bcb8fa5f8910e296fd7"
     },
     {
       "name": "JigglyRadio.zip",
       "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/JigglyRadio.zip",
       "sha1": "a2afd8ba31b89d46feb30919808155783821119a"
-    }
-    ,
+    },
     {
-      "name": "ATMxMSD RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/ATMxMSD%20RP.zip",
-      "sha1": "7614cecca22e7e2c4fea2675c4e8b152397f0476"
-    }
-    ,
-    {
-      "name": "Canon PC Wallpapers.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Canon%20PC%20Wallpapers.zip",
-      "sha1": "a86b33e6d4f782d4b8d5ae9e0ebfaea68c1746a0"
-    }
-    ,
-    {
-      "name": "CavsCobbleMons RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/CavsCobbleMons%20RP.zip",
-      "sha1": "18a6e488ee0d8671632cb8941e052d5a7480185f"
-    }
-    ,
-    {
-      "name": "Classic Grass.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Classic%20Grass.zip",
-      "sha1": "d4877aea86f2428b8399ae14ef00b8deb11e26de"
-    }
-    ,
-    {
-      "name": "Cobblemon Interface Modded.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface%20Modded.zip",
-      "sha1": "0599cd556bafd67537690ebe037bc7e4a88c2542"
-    }
-    ,
-    {
-      "name": "Cobblemon Interface Modded.zip.rpo",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface%20Modded.zip.rpo",
-      "sha1": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f"
-    }
-    ,
-    {
-      "name": "Cobblemon Interface.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface.zip",
-      "sha1": "f91aa128e036b579fc687e55f9b9a240e3fbf65a"
-    }
-    ,
-    {
-      "name": "Cobblemon Interface.zip.rpo",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Cobblemon%20Interface.zip.rpo",
-      "sha1": "def938ac2768e561115d6e2694e766604124f9aa"
-    }
-    ,
-    {
-      "name": "CobbleMotion RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/CobbleMotion%20RP.zip",
-      "sha1": "0f17006b0b161c106ce03c729cec518e8d5bbe1e"
-    }
-    ,
-    {
-      "name": "COBBLEVERSE RCTmod RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/COBBLEVERSE%20RCTmod%20RP.zip",
-      "sha1": "de695b3cd9a61e5db7a9c3fc82bf69ec7deecc1a"
-    }
-    ,
-    {
-      "name": "COBBLEVERSE RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/COBBLEVERSE%20RP.zip",
-      "sha1": "a7620b8e266225fbe2472797f71283d11b6b9ed4"
-    }
-    ,
-    {
-      "name": "Comforts Modernized.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Comforts%20Modernized.zip",
-      "sha1": "34cc0542c57aedc727ea5d3cf8947a14904caa3c"
-    }
-    ,
-    {
-      "name": "E19 Cobblemon Minimap Icons.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/E19%20Cobblemon%20Minimap%20Icons.zip",
-      "sha1": "4ed272ac54c51710a8fef473b01f75805277afb6"
-    }
-    ,
-    {
-      "name": "EeveelutionsReimagined RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/EeveelutionsReimagined%20RP.zip",
-      "sha1": "eb6e0ecfe1500ddebab3d68c6f664a6f2cfb0de3"
-    }
-    ,
-    {
-      "name": "Emissive Cobblemon Ores.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Emissive%20Cobblemon%20Ores.zip",
-      "sha1": "8bb4afe1b3b1a3b2ec5edf14367cb29860197456"
-    }
-    ,
-    {
-      "name": "Fresh Animations.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Fresh%20Animations.zip",
-      "sha1": "17d3630f0942e0d0d93f58fc998f780f06b81e63"
-    }
-    ,
-    {
-      "name": "Fresh Icons.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Fresh%20Icons.zip",
-      "sha1": "b9ddfb4614220612c7492666db730393954435b8"
-    }
-    ,
-    {
-      "name": "Fresh Moves.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Fresh%20Moves.zip",
-      "sha1": "7049cc12935ff4be20173c908ad946f530861a4c"
-    }
-    ,
-    {
-      "name": "FullyHisuianStarters RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/FullyHisuianStarters%20RP.zip",
-      "sha1": "aec849f89f5351c30ef31da5d91691aebfaac590"
-    }
-    ,
-    {
-      "name": "GlitchDex RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/GlitchDex%20RP.zip",
-      "sha1": "535eabe94e9f22095c31f0cd38610eeb8213ef33"
-    }
-    ,
-    {
-      "name": "HydroReanimodel RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/HydroReanimodel%20RP.zip",
-      "sha1": "0634991d96f80f4cabec617e34d2c94fe606a06b"
-    }
-    ,
-    {
-      "name": "LackingMons RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/LackingMons%20RP.zip",
-      "sha1": "12e8a567003637ddd85f775e639d2b9727ead4e6"
-    }
-    ,
-    {
-      "name": "Low Fire.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Low%20Fire.zip",
-      "sha1": "1641441bde52529aab09b8688070872547c10a70"
-    }
-    ,
-    {
-      "name": "MelloMons RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/MelloMons%20RP.zip",
-      "sha1": "e58c300d345e55659f659183ee8fb010812466b1"
-    }
-    ,
-    {
-      "name": "MissingMons RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/MissingMons%20RP.zip",
-      "sha1": "db62eb35a78834978af62db36dd9381d5e8a1b41"
-    }
-    ,
-    {
-      "name": "MundialMons RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/MundialMons%20RP.zip",
-      "sha1": "e26ede05c4d3201457338bc608843623dd16159b"
-    }
-    ,
-    {
-      "name": "MysticMons RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/MysticMons%20RP.zip",
-      "sha1": "e4e6545d60efb2926d2065414a5d754f46567bb8"
-    }
-    ,
-    {
-      "name": "OJsAnimations RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/OJsAnimations%20RP.zip",
-      "sha1": "dbb2abcac4632aae709b7aaed7871faef2bf5af5"
-    }
-    ,
-    {
-      "name": "Original Pokemon Battle Music.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Original%20Pokemon%20Battle%20Music.zip",
-      "sha1": "ee0fce4ed8b046df2fbf707788dc674a290ae430"
-    }
-    ,
-    {
-      "name": "PlanetaCobblemon RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/PlanetaCobblemon%20RP.zip",
-      "sha1": "2bf23262cfe5cc371cb742e97890e08c78fbb9a6"
-    }
-    ,
-    {
-      "name": "PokeDiscs.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/PokeDiscs.zip",
-      "sha1": "f5421bb1a6bd1edecd00a4d1a0fdda2be27e3c11"
-    }
-    ,
-    {
-      "name": "Pokemans RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/Pokemans%20RP.zip",
-      "sha1": "c3a00afd43fc81d650dc2123e5135e19c7f7b416"
-    }
-    ,
-    {
-      "name": "PokeRods3D.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/PokeRods3D.zip",
-      "sha1": "c5a92bf0d82abba72eb3a93f6e8bd40560d1c247"
-    }
-    ,
-    {
-      "name": "TDmon RP.zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/TDmon%20RP.zip",
-      "sha1": "b6c0816f934c34c7fe1c5bcb8fa5f8910e296fd7"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [ATM x MSD - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BATM%20x%20MSD%20-%20Credits%20Only%5D.zip",
-      "sha1": "5ae97ded76c4433f759deaff734ccb01855ad480"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [CavsCobbleMons - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BCavsCobbleMons%20-%20Credits%20Only%5D.zip",
-      "sha1": "a0e58e21e6ead0bc7dc2103ba2feb0e1f70c7a9d"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [CobbleMotion - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BCobbleMotion%20-%20Credits%20Only%5D.zip",
-      "sha1": "56f099d51ef12a1db57b0ba01640d7f09cee0044"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [E19 Minimap Icons - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BE19%20Minimap%20Icons%20-%20Credits%20Only%5D.zip",
-      "sha1": "1aefc7a313b3c6f719d2fa53916afff18cd0792f"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [GlitchDex - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BGlitchDex%20-%20Credits%20Only%5D.zip",
-      "sha1": "af46e52755f7305cd44996818fe62bfbaf55736d"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [Hydro Reanimodel - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BHydro%20Reanimodel%20-%20Credits%20Only%5D.zip",
-      "sha1": "4361c4a8f716ac45c1c6bc7de4f480e07c09e62c"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [LackingMons - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BLackingMons%20-%20Credits%20Only%5D.zip",
-      "sha1": "583fe91692c9ca75d4301df754514f973fc076f9"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [MissingMons - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BMissingMons%20-%20Credits%20Only%5D.zip",
-      "sha1": "791e99c6e6eee6eac8cfc11ced17abd1e2098eb5"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [MundialMons - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BMundialMons%20-%20Credits%20Only%5D.zip",
-      "sha1": "0e385a109fa59d3d2d8f1d382c930d7dafd59936"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [MysticMons - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BMysticMons%20-%20Credits%20Only%5D.zip",
-      "sha1": "07144e890edf13520d4317a5439315344cd53d52"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [PlanetaCobblemon - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BPlanetaCobblemon%20-%20Credits%20Only%5D.zip",
-      "sha1": "87a5f855fc8e4d7de01096125f413b3ab44d846a"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [Pokemans - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BPokemans%20-%20Credits%20Only%5D.zip",
-      "sha1": "0fe76f67ba72fdf6327dc45f4390437d476474d3"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [TDmon - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BTDmon%20-%20Credits%20Only%5D.zip",
-      "sha1": "ebb02b7544fb3378ee2b252d91921e051ddbb00d"
-    }
-    ,
-    {
-      "name": "z DO NOT ENABLE z [Terralith - Credits Only].zip",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks/z%20DO%20NOT%20ENABLE%20z%20%5BTerralith%20-%20Credits%20Only%5D.zip",
-      "sha1": "fc1349e387e480bec84c6813d1d75e85c3a5ac4f"
+      "name": "COBBLEVERSE Soundtrack.zip",
+      "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/COBBLEVERSE.Soundtrack.zip",
+      "sha1": "b3a3d35c4e49e2dfee9c752b6287dcf107020708"
     }
   ]
 }

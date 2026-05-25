@@ -84,7 +84,7 @@ ipcMain.on('open-folder', (event, type) => {
     const baseDir = path.join(app.getPath('userData'), 'instances');
     const dirs = {
         mods:          path.join(baseDir, 'pack_cobblemon', 'mods'),
-        datapacks:     path.join(baseDir, 'pack_cobblemon', 'global_packs', 'required_data'),
+        datapacks:     path.join(baseDir, 'pack_cobblemon', 'datapacks'),
         shaderpacks:   path.join(baseDir, 'pack_cobblemon', 'shaderpacks'),
         resourcepacks: path.join(baseDir, 'pack_cobblemon', 'resourcepacks'),
         screenshots:   path.join(baseDir, 'pack_cobblemon', 'screenshots'),
@@ -141,10 +141,39 @@ async function setupServersDat(gameDir, fileUrl) {
             file.on('finish', () => file.close(resolve));
             file.on('error', reject);
         });
-        console.log('[MC] servers.dat installé');
     } catch (err) {
         console.error('[MC] Erreur servers.dat :', err.message);
     }
+}
+
+// Active automatiquement les resource packs téléchargés dans options.txt
+function activateResourcepacks(gameDir, resourcepacksDir) {
+    if (!fs.existsSync(resourcepacksDir)) return;
+
+    const optionsPath = path.join(gameDir, 'options.txt');
+    const installedRPs = fs.readdirSync(resourcepacksDir).filter(f => f.endsWith('.zip'));
+
+    // Construire la liste des packs activés
+    const packs = ['"vanilla"', '"fabric"'];
+    for (const rp of installedRPs) {
+        packs.push(`"file/${rp}"`);
+    }
+    const resourcePacksLine = 'resourcePacks:[' + packs.join(',') + ']';
+
+    let optionsContent = '';
+    if (fs.existsSync(optionsPath)) {
+        optionsContent = fs.readFileSync(optionsPath, 'utf8');
+        if (optionsContent.includes('resourcePacks:')) {
+            optionsContent = optionsContent.replace(/resourcePacks:\[.*?\]/, resourcePacksLine);
+        } else {
+            optionsContent += '\n' + resourcePacksLine + '\n';
+        }
+    } else {
+        optionsContent = resourcePacksLine + '\n';
+    }
+
+    fs.writeFileSync(optionsPath, optionsContent);
+    console.log('[MC] options.txt mis à jour avec ' + installedRPs.length + ' resource packs');
 }
 
 ipcMain.on('launch-game', async (event, packData) => {
@@ -156,7 +185,7 @@ ipcMain.on('launch-game', async (event, packData) => {
     const ram = packData.ram || 4;
     const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
     const modsDir = path.join(gameDir, 'mods');
-    const datapacksDir = path.join(gameDir, 'global_packs', 'required_data');
+    const datapacksDir = path.join(gameDir, 'datapacks');
     const shaderpacksDir = path.join(gameDir, 'shaderpacks');
     const resourcepacksDir = path.join(gameDir, 'resourcepacks');
 
@@ -215,7 +244,7 @@ ipcMain.on('launch-game', async (event, packData) => {
                 })
             );
         } catch (err) {
-            event.sender.send('sync-status', { message: "Avertissement resource packs : " + err.message });
+            event.sender.send('sync-status', { message: "Avertissement RP : " + err.message });
         }
     }
 
@@ -245,7 +274,11 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
-    // 7. LANCEMENT
+    // 7. ACTIVER LES RESOURCE PACKS
+    event.sender.send('sync-status', { message: "Activation des resource packs..." });
+    activateResourcepacks(gameDir, resourcepacksDir);
+
+    // 8. LANCEMENT
     const opts = {
         authorization: mcToken.mclc(),
         root: gameDir,

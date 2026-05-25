@@ -6,7 +6,7 @@
       "version": "1.0.0",
       "minecraft": "1.21.1",
       "loader": "fabric",
-      "description": "Attrapez-les tous dans Minecraft ! Modpack basé sur Cobblemon pour le serveur.",
+      "description": "Attrapez-les tous dans Minecraft ! Modpack bas\u00e9 sur Cobblemon pour le serveur.",
       "icon_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/assets/pack-icons/cobblemon.png",
       "manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/manifest.json",
       "datapacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks_manifest.json",
