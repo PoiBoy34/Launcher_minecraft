@@ -9,7 +9,6 @@ const launcher = new Client();
 let mcToken = null;
 let currentWindow = null;
 
-// Envoi des logs MCLC directement à la fenêtre si elle existe
 launcher.on('debug', (e) => console.log('[MC]', e));
 launcher.on('data',  (e) => console.log('[MC DATA]', e));
 launcher.on('error', (e) => {
@@ -27,7 +26,6 @@ function createWindow() {
         }
     });
     win.loadFile(path.join(__dirname, 'index.html'));
-    win.webContents.openDevTools();
     currentWindow = win;
     return win;
 }
@@ -44,18 +42,46 @@ ipcMain.handle('get-catalog', async () => {
 });
 
 ipcMain.on('login-microsoft', async (event) => {
-    console.log("Démarrage du login...");
     try {
         const authManager = new Auth("select_account");
         const xboxManager = await authManager.launch("electron");
         mcToken = await xboxManager.getMinecraft();
-        console.log("Login réussi :", mcToken.profile.name);
         event.sender.send('auth-success', { name: mcToken.profile.name });
     } catch (err) {
-        console.error("Erreur msmc :", err);
         event.sender.send('auth-error', { message: err.message });
     }
 });
+
+function assembleParts(modsDir, baseName, onStatus) {
+    return new Promise((resolve, reject) => {
+        const finalPath = path.join(modsDir, baseName);
+        const writeStream = fs.createWriteStream(finalPath);
+
+        let idx = 0;
+        function writeNext() {
+            const partPath = path.join(modsDir, `${baseName}.part${String(idx).padStart(2, '0')}`);
+            if (!fs.existsSync(partPath)) {
+                writeStream.end();
+                return;
+            }
+            const data = fs.readFileSync(partPath);
+            const canContinue = writeStream.write(data);
+            idx++;
+            if (canContinue) {
+                writeNext();
+            } else {
+                writeStream.once('drain', writeNext);
+            }
+        }
+
+        writeStream.on('finish', () => {
+            onStatus('Assemblé : ' + baseName);
+            resolve();
+        });
+        writeStream.on('error', reject);
+        writeNext();
+    });
+}
 
 ipcMain.on('launch-game', async (event, packData) => {
     if (!mcToken) {
@@ -66,66 +92,66 @@ ipcMain.on('launch-game', async (event, packData) => {
     const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
     const modsDir = path.join(gameDir, 'mods');
 
+    // 1. SYNCHRONISATION
     try {
         await syncMods(
             packData.manifest_url,
             modsDir,
-            (msg) => {
-                console.log('[SYNC]', msg);
-                event.sender.send('sync-status', { message: msg });
-            },
-            (fileName, received, total) => {
-                const pct = Math.round((received / total) * 100);
-                event.sender.send('sync-progress', { fileName, pct });
-            }
+            (msg) => event.sender.send('sync-status', { message: msg }),
+            (fileName, received, total) => event.sender.send('sync-progress', {
+                fileName,
+                pct: Math.round((received / total) * 100)
+            })
         );
     } catch (err) {
-        console.error("Erreur sync mods :", err);
         event.sender.send('launch-error', "Erreur sync : " + err.message);
         return;
     }
 
-    // --- NOUVEAU : AUTO-ASSEMBLAGE DES FICHIERS COUPÉS ---
+    // 2. ASSEMBLAGE des .part
     try {
-        event.sender.send('sync-status', { message: "Assemblage des fichiers lourds..." });
         const allFiles = fs.readdirSync(modsDir);
-        // Cherche le premier morceau de chaque fichier découpé
         const part00Files = allFiles.filter(f => f.endsWith('.part00'));
-        
+
         for (const part00 of part00Files) {
-            const baseName = part00.replace('.part00', ''); // Retrouve le nom original (.jar)
+            const baseName = part00.replace('.part00', '');
             const finalPath = path.join(modsDir, baseName);
-            
-            // On recolle les morceaux
-            const writeStream = fs.createWriteStream(finalPath);
-            let idx = 0;
-            while (true) {
-                const pName = `${baseName}.part${String(idx).padStart(2, '0')}`;
-                const pPath = path.join(modsDir, pName);
-                if (!fs.existsSync(pPath)) break;
-                
-                writeStream.write(fs.readFileSync(pPath));
-                idx++;
+
+            const partPaths = allFiles
+                .filter(f => f.startsWith(baseName + '.part'))
+                .map(f => path.join(modsDir, f));
+
+            const totalPartsSize = partPaths.reduce((sum, p) => sum + fs.statSync(p).size, 0);
+            const needsAssembly = !fs.existsSync(finalPath) ||
+                fs.statSync(finalPath).size !== totalPartsSize;
+
+            if (needsAssembly) {
+                event.sender.send('sync-status', { message: 'Assemblage : ' + baseName + '...' });
+                await assembleParts(modsDir, baseName, (msg) =>
+                    event.sender.send('sync-status', { message: msg })
+                );
+            } else {
+                event.sender.send('sync-status', { message: 'Déjà assemblé : ' + baseName });
             }
-            writeStream.end();
         }
     } catch (err) {
-        console.error("Erreur lors de l'assemblage :", err);
+        console.error("Erreur assemblage :", err);
+        event.sender.send('launch-error', "Erreur assemblage : " + err.message);
+        return;
     }
-    // -----------------------------------------------------
 
+    // 3. LANCEMENT
     const opts = {
         authorization: mcToken.mclc(),
         root: gameDir,
         version: { number: packData.minecraft, type: "release" },
         memory: { max: "4G", min: "2G" }
     };
-    
+
     try {
         event.sender.send('sync-status', { message: "Démarrage de Minecraft..." });
         await launcher.launch(opts);
     } catch (err) {
-        console.error("Erreur lancement :", err);
         event.sender.send('launch-error', String(err));
     }
 });
