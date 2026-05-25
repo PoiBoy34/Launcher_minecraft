@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "files": [
+    {
+      "name": "COBBLEVERSE-Shaders-HQ.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/shaderpacks/COBBLEVERSE-Shaders-HQ.zip",
+      "sha1": "b4e0706d8a52379e7095bf5b1070687f6f805c9c"
+    }
+    ,
+    {
+      "name": "COBBLEVERSE-Shaders.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/shaderpacks/COBBLEVERSE-Shaders.zip",
+      "sha1": "fd95ce65c651f32d37bfff16d36959519f8136df"
+    }
+    ,
+    {
+      "name": "ComplementaryUnbound_r5.7.1.zip",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/shaderpacks/ComplementaryUnbound_r5.7.1.zip",
+      "sha1": "95883b516298ff4cf1a67ff512086eb67aeedd98"
+    }
+  ]
+}

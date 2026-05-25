@@ -25,12 +25,27 @@ for modpack_dir in modpacks/*/; do
 
     local FIRST_FILE=true
 
-    # Injection de la release GitHub pour le gros fichier Cobblemon
+    # 1. Injection du gros Mod Cobblemon
     if [ "$FOLDER_NAME" = "mods" ] && [ "$MODPACK_NAME" = "Cobblemon" ]; then
       echo '    {
       "name": "Cobblemon-fabric-1.7.3+1.21.1.jar",
       "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/Cobblemon-fabric-1.7.3+1.21.1.jar",
       "sha1": "f192cda3fdfec0f20d1dee1887ec1b9e77b1618c"
+    }' >> "$MANIFEST_FILE"
+      FIRST_FILE=false
+    fi
+
+    # 2. Injection des gros Resource Packs Audio
+    if [ "$FOLDER_NAME" = "resourcepacks" ] && [ "$MODPACK_NAME" = "Cobblemon" ]; then
+      echo '    {
+      "name": "COBBLEVERSE Soundtrack.zip",
+      "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/COBBLEVERSE%20Soundtrack.zip",
+      "sha1": "b3a3d35c4e49e2dfee9c752b6287dcf107020708"
+    },
+    {
+      "name": "JigglyRadio.zip",
+      "url": "https://github.com/PoiBoy34/Launcher_minecraft/releases/download/mods-v1/JigglyRadio.zip",
+      "sha1": "a2afd8ba31b89d46feb30919808155783821119a"
     }' >> "$MANIFEST_FILE"
       FIRST_FILE=false
     fi
