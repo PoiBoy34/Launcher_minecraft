@@ -4,7 +4,7 @@ const fs = require('fs');
 const https = require('https');
 const { Client } = require('minecraft-launcher-core');
 const { Auth } = require('msmc');
-const { fetchCatalog, syncMods, syncDatapacks } = require('./modSync');
+const { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks } = require('./modSync');
 
 const launcher = new Client();
 let mcToken = null;
@@ -73,18 +73,13 @@ function assembleParts(modsDir, baseName, onStatus) {
     });
 }
 
-// Fonction pour télécharger le profil Fabric officiel
 async function setupFabric(gameDir, mcVersion, loaderVersion) {
     const customName = `fabric-${mcVersion}`;
     const versionDir = path.join(gameDir, 'versions', customName);
     const jsonFile = path.join(versionDir, `${customName}.json`);
 
-    // Créer le dossier s'il n'existe pas
-    if (!fs.existsSync(versionDir)) {
-        fs.mkdirSync(versionDir, { recursive: true });
-    }
+    if (!fs.existsSync(versionDir)) fs.mkdirSync(versionDir, { recursive: true });
 
-    // Télécharger le JSON de Fabric si on ne l'a pas déjà
     if (!fs.existsSync(jsonFile)) {
         console.log(`[MC] Téléchargement du profil Fabric pour ${mcVersion}...`);
         const url = `https://meta.fabricmc.net/v2/versions/loader/${mcVersion}/${loaderVersion}/profile/json`;
@@ -102,6 +97,22 @@ async function setupFabric(gameDir, mcVersion, loaderVersion) {
     return customName;
 }
 
+// Fonction pour télécharger le fichier servers.dat
+async function setupServersDat(gameDir, fileUrl) {
+    if (!fileUrl) return;
+    const serversDatPath = path.join(gameDir, 'servers.dat');
+    if (!fs.existsSync(serversDatPath)) {
+        await new Promise((resolve) => {
+            https.get(fileUrl + '?t=' + Date.now(), (res) => {
+                if (res.statusCode !== 200) return resolve();
+                const file = fs.createWriteStream(serversDatPath);
+                res.pipe(file);
+                file.on('finish', () => file.close(resolve));
+            }).on('error', resolve);
+        });
+    }
+}
+
 ipcMain.on('launch-game', async (event, packData) => {
     if (!mcToken) {
         event.sender.send('launch-error', "Lancement impossible : pas de token");
@@ -111,6 +122,7 @@ ipcMain.on('launch-game', async (event, packData) => {
     const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
     const modsDir = path.join(gameDir, 'mods');
     const datapacksDir = path.join(gameDir, 'datapacks');
+    const shaderpacksDir = path.join(gameDir, 'shaderpacks');
 
     // 1. SYNC MODS
     try {
@@ -140,11 +152,32 @@ ipcMain.on('launch-game', async (event, packData) => {
             );
         } catch (err) {
             console.error("Erreur sync datapacks :", err);
-            event.event.sender.send('sync-status', { message: "Avertissement datapacks : " + err.message });
+            event.sender.send('sync-status', { message: "Avertissement datapacks : " + err.message });
         }
     }
 
-    // 3. ASSEMBLAGE .part
+    // 3. SYNC SHADERS
+    if (packData.shaderpacks_manifest_url) {
+        try {
+            await syncShaderpacks(
+                packData.shaderpacks_manifest_url,
+                shaderpacksDir,
+                (msg) => event.sender.send('sync-status', { message: msg }),
+                (fileName, received, total) => event.sender.send('sync-progress', {
+                    fileName, pct: Math.round((received / total) * 100)
+                })
+            );
+        } catch (err) {
+            console.error("Erreur sync shaderpacks :", err);
+            event.sender.send('sync-status', { message: "Avertissement shaders : " + err.message });
+        }
+    }
+
+    // 4. CONFIG SERVEUR PRÉ-ENREGISTRÉ
+    event.sender.send('sync-status', { message: "Configuration du serveur multijoueur..." });
+    await setupServersDat(gameDir, packData.servers_dat_url);
+
+    // 5. ASSEMBLAGE .part
     try {
         const allFiles = fs.readdirSync(modsDir);
         const part00Files = allFiles.filter(f => f.endsWith('.part00'));
@@ -169,11 +202,10 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
-    // 4. LANCEMENT AVEC FABRIC
+    // 6. LANCEMENT AVEC FABRIC
     try {
         event.sender.send('sync-status', { message: "Préparation de Fabric..." });
         
-        // On récupère le loader Fabric (version 0.18.0)
         const customVersionName = await setupFabric(gameDir, packData.minecraft, "0.18.0");
 
         const opts = {
@@ -182,7 +214,7 @@ ipcMain.on('launch-game', async (event, packData) => {
             version: { 
                 number: packData.minecraft, 
                 type: "release",
-                custom: customVersionName // Active Fabric au lieu de Vanilla
+                custom: customVersionName
             },
             memory: { max: "4G", min: "2G" }
         };
