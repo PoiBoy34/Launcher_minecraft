@@ -1,7 +1,15 @@
 ## 🏗️ Phase 1 : Initialisation et Architecture (Setup)
 *Mise en place de l'environnement de travail et des fondations du projet.*
 
+### 🛠️ Les tâches de Joseph (Infrastructure & Serveur)
+- [ ] Créer le dépôt GitHub public (ex: `custom-mc-launcher`).
+- [ ] Créer la structure de dossiers pour héberger les mods sur le dépôt (ex: `/modpacks/survie/mods/`).
+- [ ] Rédiger la première version du fichier `catalog.json` à la racine (avec les infos du premier modpack).
+- [ ] Créer le `manifest.json` du premier modpack (lister 2 ou 3 mods avec leurs liens directs et leur hash SHA-1 pour tester).
+- [ ] Ajouter Eman en tant que collaborateur sur le dépôt GitHub.
+
 ### 💻 Les tâches d'Eman (Développement Windows)
+- [ ] Cloner le dépôt GitHub sur sa machine Windows.
 - [ ] Initialiser le projet Node.js (`npm init -y`).
 - [ ] Installer les dépendances principales : `npm install minecraft-launcher-core electron download`.
 - [ ] Installer les dépendances de développement : `npm install electron-builder --save-dev`.
