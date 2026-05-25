@@ -84,7 +84,7 @@ ipcMain.on('open-folder', (event, type) => {
     const baseDir = path.join(app.getPath('userData'), 'instances');
     const dirs = {
         mods:        path.join(baseDir, 'pack_cobblemon', 'mods'),
-        datapacks:   path.join(baseDir, 'pack_cobblemon', 'datapacks'),
+        datapacks:   path.join(baseDir, 'pack_cobblemon', 'global_packs', 'required_data'),
         shaderpacks: path.join(baseDir, 'pack_cobblemon', 'shaderpacks'),
         screenshots: path.join(baseDir, 'pack_cobblemon', 'screenshots'),
         game:        path.join(baseDir, 'pack_cobblemon')
@@ -155,7 +155,7 @@ ipcMain.on('launch-game', async (event, packData) => {
     const ram = packData.ram || 4;
     const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
     const modsDir = path.join(gameDir, 'mods');
-    const datapacksDir = path.join(gameDir, 'datapacks');
+    const datapacksDir = path.join(gameDir, 'global_packs', 'required_data');
     const shaderpacksDir = path.join(gameDir, 'shaderpacks');
 
     // 1. SYNC MODS
