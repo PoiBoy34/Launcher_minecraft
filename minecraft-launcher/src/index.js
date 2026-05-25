@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const { Client } = require('minecraft-launcher-core');
 const { Auth } = require('msmc');
 const { fetchCatalog, syncMods } = require('./modSync');
@@ -83,6 +84,35 @@ ipcMain.on('launch-game', async (event, packData) => {
         event.sender.send('launch-error', "Erreur sync : " + err.message);
         return;
     }
+
+    // --- NOUVEAU : AUTO-ASSEMBLAGE DES FICHIERS COUPÉS ---
+    try {
+        event.sender.send('sync-status', { message: "Assemblage des fichiers lourds..." });
+        const allFiles = fs.readdirSync(modsDir);
+        // Cherche le premier morceau de chaque fichier découpé
+        const part00Files = allFiles.filter(f => f.endsWith('.part00'));
+        
+        for (const part00 of part00Files) {
+            const baseName = part00.replace('.part00', ''); // Retrouve le nom original (.jar)
+            const finalPath = path.join(modsDir, baseName);
+            
+            // On recolle les morceaux
+            const writeStream = fs.createWriteStream(finalPath);
+            let idx = 0;
+            while (true) {
+                const pName = `${baseName}.part${String(idx).padStart(2, '0')}`;
+                const pPath = path.join(modsDir, pName);
+                if (!fs.existsSync(pPath)) break;
+                
+                writeStream.write(fs.readFileSync(pPath));
+                idx++;
+            }
+            writeStream.end();
+        }
+    } catch (err) {
+        console.error("Erreur lors de l'assemblage :", err);
+    }
+    // -----------------------------------------------------
 
     const opts = {
         authorization: mcToken.mclc(),
