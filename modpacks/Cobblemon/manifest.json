@@ -260,6 +260,12 @@
     }
     ,
     {
+      "name": "CustomNPCs-Unofficial-Fabric-1.21.1.20260521.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/CustomNPCs-Unofficial-Fabric-1.21.1.20260521.jar",
+      "sha1": "74bd2a542fa2a40da00d54a48532c1a267dc39bb"
+    }
+    ,
+    {
       "name": "Debugify-1.21.1+1.0.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/Debugify-1.21.1+1.0.jar",
       "sha1": "6fb7d4ec9c2d2dc5b58577324b47671d3e28d7a4"
