@@ -48,6 +48,7 @@
   #sel-icon { font-size: 24px; }
   #sel-name { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; color: #ffd700; }
   #sel-meta { font-size: 12px; color: #9ca3af; }
+  #launcher-version-tag { margin-left: auto; font-size: 11px; color: #6b7280; font-family: monospace; }
   #action-row { display: flex; align-items: center; gap: 10px; }
   #play-btn { flex: 1; padding: 13px 20px; background: linear-gradient(135deg, #7c3aed, #4f46e5); color: white; border: none; border-radius: 10px; font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 0.05em; cursor: pointer; transition: all 0.25s; text-transform: uppercase; }
   #play-btn:not(:disabled):hover { background: linear-gradient(135deg, #8b5cf6, #6366f1); transform: translateY(-1px); box-shadow: 0 4px 20px rgba(124,58,237,0.4); }
@@ -62,7 +63,7 @@
   #settings-btn:hover { background: rgba(255,255,255,0.12); color: #e2e8f0; }
   #settings-panel { display: none; position: fixed; inset: 0; z-index: 100; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); }
   #settings-panel.open { display: flex; }
-  .settings-box { background: #0f0f2a; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 28px; width: 420px; max-width: 90vw; }
+  .settings-box { background: #0f0f2a; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; padding: 28px; width: 420px; max-width: 90vw; max-height: 90vh; overflow-y: auto; }
   .settings-title { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; color: #ffd700; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
   .settings-close { background: none; border: none; color: #6b7280; font-size: 20px; cursor: pointer; padding: 0; line-height: 1; }
   .settings-close:hover { color: #e2e8f0; }
@@ -74,12 +75,33 @@
   .folder-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #cbd5e1; cursor: pointer; font-size: 13px; font-family: 'Exo 2', sans-serif; transition: all 0.2s; margin-bottom: 8px; }
   .folder-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(168,139,250,0.4); color: #fff; }
   .folder-btn .folder-icon { font-size: 16px; }
+  .folder-btn.update-check { background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.4); color: #c4b5fd; }
+  .folder-btn.update-check:hover { background: rgba(124,58,237,0.25); }
+  #update-status { font-size: 11px; color: #9ca3af; margin-top: 6px; text-align: center; }
+
+  /* UPDATE BANNER */
+  #update-banner { display: none; position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #1e40af, #4f46e5); padding: 10px 16px; border-radius: 10px; align-items: center; gap: 12px; z-index: 50; box-shadow: 0 4px 24px rgba(79,70,229,0.5); }
+  #update-banner.show { display: flex; }
+  #update-text { color: #fff; font-size: 13px; font-weight: 500; }
+  .banner-btn { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 5px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: 'Exo 2', sans-serif; }
+  .banner-btn:hover { background: rgba(255,255,255,0.3); }
+  .banner-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .banner-close { background: none; border: none; color: #ccc; cursor: pointer; font-size: 14px; padding: 0 4px; }
+  .banner-close:hover { color: #fff; }
 </style>
 </head>
 <body>
   <div id="bg"></div>
   <div id="overlay"></div>
 
+  <!-- Update Banner -->
+  <div id="update-banner">
+    <span id="update-text"></span>
+    <button id="update-action" class="banner-btn">Télécharger</button>
+    <button id="update-close" class="banner-close">✕</button>
+  </div>
+
+  <!-- Settings Panel -->
   <div id="settings-panel">
     <div class="settings-box">
       <div class="settings-title">
@@ -116,6 +138,14 @@
           <span class="folder-icon">📁</span> Ouvrir le dossier du jeu
         </button>
       </div>
+
+      <div class="settings-section">
+        <div class="settings-label">Launcher</div>
+        <button class="folder-btn update-check" id="btn-check-update">
+          <span class="folder-icon">🔄</span> Vérifier les mises à jour
+        </button>
+        <div id="update-status"></div>
+      </div>
     </div>
   </div>
 
@@ -148,6 +178,7 @@
           <div id="sel-name">Aucun modpack sélectionné</div>
           <div id="sel-meta">Choisissez un modpack ci-dessus</div>
         </div>
+        <div id="launcher-version-tag"></div>
       </div>
       <div id="action-row">
         <button id="play-btn" disabled>SÉLECTIONNER UN MODPACK</button>
@@ -191,6 +222,62 @@
   document.getElementById('btn-open-resourcepacks').addEventListener('click', () => window.api.openFolder('resourcepacks'));
   document.getElementById('btn-open-screenshots').addEventListener('click', () => window.api.openFolder('screenshots'));
   document.getElementById('btn-open-game').addEventListener('click', () => window.api.openFolder('game'));
+
+  // Version du launcher
+  window.api.getLauncherVersion().then(v => {
+    document.getElementById('launcher-version-tag').textContent = 'v' + v;
+  });
+
+  // Update check manuel
+  document.getElementById('btn-check-update').addEventListener('click', () => {
+    document.getElementById('update-status').textContent = 'Vérification en cours...';
+    document.getElementById('update-status').style.color = '#9ca3af';
+    window.api.checkUpdate();
+  });
+
+  // Close banner
+  document.getElementById('update-close').addEventListener('click', () => {
+    document.getElementById('update-banner').classList.remove('show');
+  });
+
+  // Update events
+  window.api.onUpdateAvailable((data) => {
+    const banner = document.getElementById('update-banner');
+    banner.classList.add('show');
+    document.getElementById('update-text').textContent = `Mise à jour disponible : v${data.version}`;
+    const btn = document.getElementById('update-action');
+    btn.disabled = false;
+    btn.textContent = 'Télécharger';
+    btn.onclick = () => {
+      btn.disabled = true;
+      btn.textContent = 'Téléchargement...';
+      window.api.downloadUpdate();
+    };
+    document.getElementById('update-status').textContent = `Nouvelle version v${data.version} disponible !`;
+    document.getElementById('update-status').style.color = '#a78bfa';
+  });
+
+  window.api.onUpdateNotAvailable(() => {
+    document.getElementById('update-status').textContent = 'Vous êtes à jour ✓';
+    document.getElementById('update-status').style.color = '#4ade80';
+  });
+
+  window.api.onUpdateProgress((data) => {
+    document.getElementById('update-text').textContent = `Téléchargement : ${data.pct}%`;
+  });
+
+  window.api.onUpdateDownloaded(() => {
+    const btn = document.getElementById('update-action');
+    btn.disabled = false;
+    btn.textContent = 'Installer & redémarrer';
+    btn.onclick = () => window.api.installUpdate();
+    document.getElementById('update-text').textContent = 'Mise à jour prête !';
+  });
+
+  window.api.onUpdateError((msg) => {
+    document.getElementById('update-status').textContent = 'Erreur : ' + msg;
+    document.getElementById('update-status').style.color = '#ef4444';
+  });
 
   async function loadCatalog() {
     const result = await window.api.getCatalog();

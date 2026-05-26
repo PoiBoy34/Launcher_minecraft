@@ -1,4 +1,5 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
+const { autoUpdater } = require('electron-updater');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
@@ -10,6 +11,34 @@ const { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks, syncResourcepack
 const launcher = new Client();
 let mcToken = null;
 let currentWindow = null;
+
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = true;
+
+autoUpdater.on('update-available', (info) => {
+    if (currentWindow) currentWindow.webContents.send('update-available', {
+        version: info.version
+    });
+});
+
+autoUpdater.on('update-not-available', () => {
+    if (currentWindow) currentWindow.webContents.send('update-not-available');
+});
+
+autoUpdater.on('download-progress', (progress) => {
+    if (currentWindow) currentWindow.webContents.send('update-progress', {
+        pct: Math.round(progress.percent)
+    });
+});
+
+autoUpdater.on('update-downloaded', () => {
+    if (currentWindow) currentWindow.webContents.send('update-downloaded');
+});
+
+autoUpdater.on('error', (err) => {
+    console.error('[Updater]', err.message);
+    if (currentWindow) currentWindow.webContents.send('update-error', err.message);
+});
 
 launcher.on('debug', (e) => console.log('[MC]', e));
 launcher.on('data',  (e) => console.log('[MC DATA]', e));
@@ -32,7 +61,24 @@ function createWindow() {
     return win;
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    createWindow();
+    setTimeout(() => {
+        autoUpdater.checkForUpdates().catch(err => console.error('[Updater check]', err.message));
+    }, 3000);
+});
+
+ipcMain.on('check-update', () => {
+    autoUpdater.checkForUpdates().catch(err => console.error('[Updater]', err.message));
+});
+
+ipcMain.on('download-update', () => {
+    autoUpdater.downloadUpdate().catch(err => console.error('[Updater]', err.message));
+});
+
+ipcMain.on('install-update', () => {
+    autoUpdater.quitAndInstall();
+});
 
 ipcMain.handle('get-catalog', async () => {
     try {
@@ -42,6 +88,8 @@ ipcMain.handle('get-catalog', async () => {
         return { success: false, error: err.message };
     }
 });
+
+ipcMain.handle('get-launcher-version', () => app.getVersion());
 
 ipcMain.on('auto-login', async (event) => {
     try {
@@ -251,13 +299,11 @@ ipcMain.on('launch-game', async (event, packData) => {
     const shaderpacksDir = path.join(gameDir, 'shaderpacks');
     const resourcepacksDir = path.join(gameDir, 'resourcepacks');
 
-    // 0. INSTALLATION DES CONFIGS PAR DÉFAUT (premier lancement uniquement)
     if (packData.defaults_url) {
         event.sender.send('sync-status', { message: "Installation des configurations..." });
         await setupDefaults(gameDir, packData.defaults_url);
     }
 
-    // 1. SYNC MODS
     try {
         await syncMods(
             packData.manifest_url, modsDir,
@@ -271,7 +317,6 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
-    // 2. SYNC DATAPACKS
     if (packData.datapacks_manifest_url) {
         try {
             await syncDatapacks(
@@ -286,7 +331,6 @@ ipcMain.on('launch-game', async (event, packData) => {
         }
     }
 
-    // 3. SYNC SHADERPACKS
     if (packData.shaderpacks_manifest_url) {
         try {
             await syncShaderpacks(
@@ -301,7 +345,6 @@ ipcMain.on('launch-game', async (event, packData) => {
         }
     }
 
-    // 4. SYNC RESOURCEPACKS
     if (packData.resourcepacks_manifest_url) {
         try {
             await syncResourcepacks(
@@ -316,11 +359,9 @@ ipcMain.on('launch-game', async (event, packData) => {
         }
     }
 
-    // 5. SERVERS.DAT
     event.sender.send('sync-status', { message: "Configuration serveur multijoueur..." });
     await setupServersDat(gameDir, packData.servers_dat_url);
 
-    // 6. ASSEMBLAGE .part
     try {
         const allFiles = fs.readdirSync(modsDir);
         for (const part00 of allFiles.filter(f => f.endsWith('.part00'))) {
@@ -342,11 +383,9 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
-    // 7. ACTIVATION DES RESOURCE PACKS
     event.sender.send('sync-status', { message: "Activation des resource packs..." });
     activateResourcepacks(gameDir, resourcepacksDir);
 
-    // 8. INSTALLATION FABRIC + LANCEMENT
     try {
         event.sender.send('sync-status', { message: "Installation de Fabric..." });
         const fabricVersion = await setupFabric(gameDir, packData.minecraft, "0.18.4");
