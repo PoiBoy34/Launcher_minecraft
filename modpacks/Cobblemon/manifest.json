@@ -356,6 +356,12 @@
     }
     ,
     {
+      "name": "globalspawn-2.0.0+1.21.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/globalspawn-2.0.0+1.21.jar",
+      "sha1": "95cb97995205067e4e2ac76a3485b5a07bcfcb34"
+    }
+    ,
+    {
       "name": "handcrafted-fabric-1.21.1-4.0.3.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/handcrafted-fabric-1.21.1-4.0.3.jar",
       "sha1": "a9579fecd7ed429c282be21d5c921d220197acc6"
