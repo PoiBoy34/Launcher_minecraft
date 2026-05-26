@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const https = require('https');
+const AdmZip = require('adm-zip');
 const { Client } = require('minecraft-launcher-core');
 const { Auth } = require('msmc');
 const { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks, syncResourcepacks } = require('./modSync');
@@ -128,6 +129,36 @@ function fetchWithRedirect(url) {
     });
 }
 
+async function setupFabric(gameDir, mcVersion, loaderVersion) {
+    const customName = `fabric-loader-${loaderVersion}-${mcVersion}`;
+    const versionDir = path.join(gameDir, 'versions', customName);
+    const jsonFile = path.join(versionDir, `${customName}.json`);
+
+    if (fs.existsSync(jsonFile)) {
+        return customName;
+    }
+
+    fs.mkdirSync(versionDir, { recursive: true });
+
+    const url = `https://meta.fabricmc.net/v2/versions/loader/${mcVersion}/${loaderVersion}/profile/json`;
+
+    await new Promise((resolve, reject) => {
+        https.get(url, { headers: { 'User-Agent': 'minecraft-launcher' } }, (res) => {
+            if (res.statusCode !== 200) {
+                reject(new Error(`Fabric profile HTTP ${res.statusCode}`));
+                return;
+            }
+            const file = fs.createWriteStream(jsonFile);
+            res.pipe(file);
+            file.on('finish', () => file.close(resolve));
+            file.on('error', reject);
+        }).on('error', reject);
+    });
+
+    console.log('[MC] Profil Fabric installé : ' + customName);
+    return customName;
+}
+
 async function setupServersDat(gameDir, fileUrl) {
     if (!fileUrl) return;
     const serversDatPath = path.join(gameDir, 'servers.dat');
@@ -146,14 +177,46 @@ async function setupServersDat(gameDir, fileUrl) {
     }
 }
 
-// Active automatiquement les resource packs téléchargés dans options.txt
+async function setupDefaults(gameDir, defaultsUrl) {
+    if (!defaultsUrl) return;
+
+    const markerPath = path.join(gameDir, '.defaults_installed');
+    if (fs.existsSync(markerPath)) return;
+
+    console.log('[MC] Première installation : configs par défaut...');
+
+    fs.mkdirSync(gameDir, { recursive: true });
+    const zipPath = path.join(gameDir, '_defaults.zip');
+
+    try {
+        const res = await fetchWithRedirect(defaultsUrl + '?t=' + Date.now());
+        if (res.statusCode !== 200) {
+            console.error('[MC] defaults.zip HTTP ' + res.statusCode);
+            return;
+        }
+
+        await new Promise((resolve, reject) => {
+            const file = fs.createWriteStream(zipPath);
+            res.pipe(file);
+            file.on('finish', () => file.close(resolve));
+            file.on('error', reject);
+        });
+
+        const zip = new AdmZip(zipPath);
+        zip.extractAllTo(gameDir, true);
+
+        fs.unlinkSync(zipPath);
+        fs.writeFileSync(markerPath, new Date().toISOString());
+        console.log('[MC] Configs par défaut installées');
+    } catch (err) {
+        console.error('[MC] Erreur defaults :', err.message);
+    }
+}
+
 function activateResourcepacks(gameDir, resourcepacksDir) {
     if (!fs.existsSync(resourcepacksDir)) return;
-
     const optionsPath = path.join(gameDir, 'options.txt');
     const installedRPs = fs.readdirSync(resourcepacksDir).filter(f => f.endsWith('.zip'));
-
-    // Construire la liste des packs activés
     const packs = ['"vanilla"', '"fabric"'];
     for (const rp of installedRPs) {
         packs.push(`"file/${rp}"`);
@@ -171,7 +234,6 @@ function activateResourcepacks(gameDir, resourcepacksDir) {
     } else {
         optionsContent = resourcePacksLine + '\n';
     }
-
     fs.writeFileSync(optionsPath, optionsContent);
     console.log('[MC] options.txt mis à jour avec ' + installedRPs.length + ' resource packs');
 }
@@ -188,6 +250,12 @@ ipcMain.on('launch-game', async (event, packData) => {
     const datapacksDir = path.join(gameDir, 'datapacks');
     const shaderpacksDir = path.join(gameDir, 'shaderpacks');
     const resourcepacksDir = path.join(gameDir, 'resourcepacks');
+
+    // 0. INSTALLATION DES CONFIGS PAR DÉFAUT (premier lancement uniquement)
+    if (packData.defaults_url) {
+        event.sender.send('sync-status', { message: "Installation des configurations..." });
+        await setupDefaults(gameDir, packData.defaults_url);
+    }
 
     // 1. SYNC MODS
     try {
@@ -274,18 +342,26 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
-    // 7. ACTIVER LES RESOURCE PACKS
+    // 7. ACTIVATION DES RESOURCE PACKS
     event.sender.send('sync-status', { message: "Activation des resource packs..." });
     activateResourcepacks(gameDir, resourcepacksDir);
 
-    // 8. LANCEMENT
-    const opts = {
-        authorization: mcToken.mclc(),
-        root: gameDir,
-        version: { number: packData.minecraft, type: "release" },
-        memory: { max: ram + "G", min: "2G" }
-    };
+    // 8. INSTALLATION FABRIC + LANCEMENT
     try {
+        event.sender.send('sync-status', { message: "Installation de Fabric..." });
+        const fabricVersion = await setupFabric(gameDir, packData.minecraft, "0.18.4");
+
+        const opts = {
+            authorization: mcToken.mclc(),
+            root: gameDir,
+            version: {
+                number: packData.minecraft,
+                type: "release",
+                custom: fabricVersion
+            },
+            memory: { max: ram + "G", min: "2G" }
+        };
+
         event.sender.send('sync-status', { message: "Démarrage de Minecraft..." });
         await launcher.launch(opts);
     } catch (err) {

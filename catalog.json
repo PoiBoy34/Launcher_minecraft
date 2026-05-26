@@ -12,7 +12,9 @@
       "datapacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks_manifest.json",
       "shaderpacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/shaderpacks_manifest.json",
       "resourcepacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/resourcepacks_manifest.json",
-      "servers_dat_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/servers.dat"
+      "servers_dat_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/servers.dat",
+      "defaults_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/defaults.zip",
+      "defaults_sha1": "4d482a77399464a440d6d8cb0a5a03e80d45bd2d"
     }
   ]
 }
