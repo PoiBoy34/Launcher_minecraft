@@ -332,6 +332,12 @@
     }
     ,
     {
+      "name": "ftb-library-fabric-2101.1.31.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/ftb-library-fabric-2101.1.31.jar",
+      "sha1": "18538c0a068a254a5dbf953d39d5017393b041d6"
+    }
+    ,
+    {
       "name": "fusion-1.2.12-fabric-mc1.21.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/fusion-1.2.12-fabric-mc1.21.jar",
       "sha1": "6c5ef883ab46b3e6ab5f53b7c1b0b369162f9110"
