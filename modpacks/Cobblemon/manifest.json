@@ -140,6 +140,12 @@
     }
     ,
     {
+      "name": "civiliansmod-v1.4.2+1.21.1.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/civiliansmod-v1.4.2+1.21.1.jar",
+      "sha1": "52e6adcc9780c5944f7aea71997aebd4fd7ac82d"
+    }
+    ,
+    {
       "name": "cloth-config-15.0.140-fabric.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/cloth-config-15.0.140-fabric.jar",
       "sha1": "5d82342a2df53fd6df712bfdd583a811572918a4"
