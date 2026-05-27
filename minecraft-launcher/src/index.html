@@ -77,6 +77,8 @@
   .folder-btn .folder-icon { font-size: 16px; }
   .folder-btn.update-check { background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.4); color: #c4b5fd; }
   .folder-btn.update-check:hover { background: rgba(124,58,237,0.25); }
+  .folder-btn.reset-defaults { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.3); color: #fcd34d; }
+  .folder-btn.reset-defaults:hover { background: rgba(251,191,36,0.2); }
   #update-status { font-size: 11px; color: #9ca3af; margin-top: 6px; text-align: center; }
 
   /* UPDATE BANNER */
@@ -140,6 +142,13 @@
       </div>
 
       <div class="settings-section">
+        <div class="settings-label">Configurations</div>
+        <button class="folder-btn reset-defaults" id="btn-reset-defaults">
+          <span class="folder-icon">🎯</span> Réinitialiser keybinds & minimap
+        </button>
+      </div>
+
+      <div class="settings-section">
         <div class="settings-label">Launcher</div>
         <button class="folder-btn update-check" id="btn-check-update">
           <span class="folder-icon">🔄</span> Vérifier les mises à jour
@@ -194,7 +203,6 @@
   let isLoggedIn = false;
   let ramValue = parseInt(localStorage.getItem('ram') || '4');
 
-  // Init RAM slider
   document.getElementById('ram-slider').value = ramValue;
   document.getElementById('ram-display').textContent = ramValue;
   document.getElementById('ram-slider').addEventListener('input', (e) => {
@@ -203,7 +211,6 @@
     localStorage.setItem('ram', ramValue);
   });
 
-  // Settings panel
   document.getElementById('settings-btn').addEventListener('click', () => {
     document.getElementById('settings-panel').classList.add('open');
   });
@@ -215,13 +222,24 @@
       document.getElementById('settings-panel').classList.remove('open');
   });
 
-  // Boutons dossiers
   document.getElementById('btn-open-mods').addEventListener('click', () => window.api.openFolder('mods'));
   document.getElementById('btn-open-datapacks').addEventListener('click', () => window.api.openFolder('datapacks'));
   document.getElementById('btn-open-shaderpacks').addEventListener('click', () => window.api.openFolder('shaderpacks'));
   document.getElementById('btn-open-resourcepacks').addEventListener('click', () => window.api.openFolder('resourcepacks'));
   document.getElementById('btn-open-screenshots').addEventListener('click', () => window.api.openFolder('screenshots'));
   document.getElementById('btn-open-game').addEventListener('click', () => window.api.openFolder('game'));
+
+  // Réinitialiser keybinds & configs
+  document.getElementById('btn-reset-defaults').addEventListener('click', () => {
+    if (confirm('Réinitialiser les keybinds, options et minimap aux valeurs par défaut ?\n\nCela écrasera tes paramètres actuels au prochain lancement.')) {
+      window.api.resetDefaults();
+    }
+  });
+
+  window.api.onDefaultsReset(() => {
+    document.getElementById('update-status').textContent = 'Configs réinstallées au prochain lancement ✓';
+    document.getElementById('update-status').style.color = '#4ade80';
+  });
 
   // Version du launcher
   window.api.getLauncherVersion().then(v => {
@@ -235,12 +253,10 @@
     window.api.checkUpdate();
   });
 
-  // Close banner
   document.getElementById('update-close').addEventListener('click', () => {
     document.getElementById('update-banner').classList.remove('show');
   });
 
-  // Update events
   window.api.onUpdateAvailable((data) => {
     const banner = document.getElementById('update-banner');
     banner.classList.add('show');

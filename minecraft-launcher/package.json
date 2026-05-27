@@ -1,6 +1,6 @@
 {
   "name": "minecraft-launcher",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Un launcher custom pour Cobblemon",
   "author": "PoiBoy34",
   "main": "src/index.js",

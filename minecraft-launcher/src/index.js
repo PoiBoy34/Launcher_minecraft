@@ -144,6 +144,16 @@ ipcMain.on('open-folder', (event, type) => {
     shell.openPath(target);
 });
 
+ipcMain.on('reset-defaults', (event) => {
+    const gameDir = path.join(app.getPath('userData'), 'instances', 'pack_cobblemon');
+    const markerPath = path.join(gameDir, '.defaults_installed');
+    if (fs.existsSync(markerPath)) {
+        fs.unlinkSync(markerPath);
+        console.log('[MC] Marker defaults supprimé, sera réinstallé au prochain lancement');
+    }
+    event.sender.send('defaults-reset');
+});
+
 function assembleParts(modsDir, baseName, onStatus) {
     return new Promise((resolve, reject) => {
         const finalPath = path.join(modsDir, baseName);
@@ -231,7 +241,7 @@ async function setupDefaults(gameDir, defaultsUrl) {
     const markerPath = path.join(gameDir, '.defaults_installed');
     if (fs.existsSync(markerPath)) return;
 
-    console.log('[MC] Première installation : configs par défaut...');
+    console.log('[MC] Installation des configs par défaut (keybinds, minimap)...');
 
     fs.mkdirSync(gameDir, { recursive: true });
     const zipPath = path.join(gameDir, '_defaults.zip');
