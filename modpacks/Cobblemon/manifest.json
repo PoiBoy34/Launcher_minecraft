@@ -182,6 +182,12 @@
     }
     ,
     {
+      "name": "Cobblemon-fabric-1.7.1+1.21.1.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/Cobblemon-fabric-1.7.1+1.21.1.jar",
+      "sha1": "1d864c16796a98e0f40ba5bc61977a528cc1e3a1"
+    }
+    ,
+    {
       "name": "cobblemon-journey-mounts-1.7.30-cobbleverse.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/cobblemon-journey-mounts-1.7.30-cobbleverse.jar",
       "sha1": "f864a117130fc358241c6b97e4907a7c5e3d1b24"
