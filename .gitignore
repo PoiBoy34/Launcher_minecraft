@@ -2,3 +2,4 @@ node_modules/
 .minecraft-test/
 minecraft-launcher/dist/
 minecraft-launcher/node_modules/
+modpacks/Cobblemon/mods/Cobblemon-fabric-1.7.1+1.21.1.jar
