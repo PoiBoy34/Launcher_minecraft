@@ -206,12 +206,6 @@
     }
     ,
     {
-      "name": "cobblemon-ui-tweaks-1.0.7.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/cobblemon-ui-tweaks-1.0.7.jar",
-      "sha1": "2e3a4b211b03dde7b6329bbbea693f362839f6de"
-    }
-    ,
-    {
       "name": "cobblenav-fabric-2.3.3.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/cobblenav-fabric-2.3.3.jar",
       "sha1": "63681a16bc562089329533686fcc60e7bb7cd63d"
