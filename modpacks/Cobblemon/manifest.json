@@ -182,12 +182,6 @@
     }
     ,
     {
-      "name": "Cobblemon-fabric-1.7.3+1.21.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/Cobblemon-fabric-1.7.3+1.21.1.jar",
-      "sha1": "f192cda3fdfec0f20d1dee1887ec1b9e77b1618c"
-    }
-    ,
-    {
       "name": "cobblemon-journey-mounts-1.7.30-cobbleverse.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/cobblemon-journey-mounts-1.7.30-cobbleverse.jar",
       "sha1": "f864a117130fc358241c6b97e4907a7c5e3d1b24"
@@ -419,6 +413,12 @@
       "name": "itemcommander-1.7.0-pre.2+1.21.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/itemcommander-1.7.0-pre.2+1.21.1.jar",
       "sha1": "384ee9aee9a49895cc19170e021b5a7f393775dc"
+    }
+    ,
+    {
+      "name": "Jade-1.21.1-Fabric-15.10.5.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/Jade-1.21.1-Fabric-15.10.5.jar",
+      "sha1": "ec3bf463b891c2b2400ed5bb01c0b3d67de4170a"
     }
     ,
     {
