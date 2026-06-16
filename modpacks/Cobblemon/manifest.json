@@ -530,6 +530,12 @@
     }
     ,
     {
+      "name": "NaturesCompass-1.21.1-2.6.0-fabric.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/NaturesCompass-1.21.1-2.6.0-fabric.jar",
+      "sha1": "15bb7a4f27eaa13b755edac496c1c9d502843827"
+    }
+    ,
+    {
       "name": "nethermap-4.0.0-1.21.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/nethermap-4.0.0-1.21.1.jar",
       "sha1": "4a4849b36757a268253a3a87b4a02b60f59816a6"
