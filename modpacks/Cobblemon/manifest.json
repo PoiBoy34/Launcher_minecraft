@@ -248,12 +248,6 @@
     }
     ,
     {
-      "name": "create-fabric-ufoport-0.9.3-d+mc1.21-1.21.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/create-fabric-ufoport-0.9.3-d+mc1.21-1.21.1.jar",
-      "sha1": "adb4694289c530cca2ebb5ffb6619382754879da"
-    }
-    ,
-    {
       "name": "crossstitch-0.1.6.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/crossstitch-0.1.6.jar",
       "sha1": "aba735301c683ed43d5f3361f532bf38f28116f2"
