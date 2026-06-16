@@ -404,6 +404,12 @@
     }
     ,
     {
+      "name": "indium-1.0.35+mc1.21.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/indium-1.0.35+mc1.21.jar",
+      "sha1": "1bf4b5db91f4e6d7a4f94fe2e96525d22df1cacb"
+    }
+    ,
+    {
       "name": "infinite-music-0.4.6.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/infinite-music-0.4.6.jar",
       "sha1": "72ac27231cd80aab7ea509da6694c3696dc4c96a"
