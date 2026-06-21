@@ -266,6 +266,12 @@
     }
     ,
     {
+      "name": "enchdesc-fabric-1.21.1-21.1.10.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/enchdesc-fabric-1.21.1-21.1.10.jar",
+      "sha1": "ee44782a789486c81a69be2006334b8e86309159"
+    }
+    ,
+    {
       "name": "entityculling-fabric-1.10.2-mc1.21.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/entityculling-fabric-1.10.2-mc1.21.1.jar",
       "sha1": "7d78734241d291d2abea47ffacb4ea377cf83982"
