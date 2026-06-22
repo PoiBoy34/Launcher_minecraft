@@ -104,6 +104,12 @@
     }
     ,
     {
+      "name": "bookshelf-fabric-1.21.1-21.1.2.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/bookshelf-fabric-1.21.1-21.1.2.jar",
+      "sha1": "630c30f09695212324af3d30374efe889e89a7a2"
+    }
+    ,
+    {
       "name": "brb-1.10.0-rc5+1.21.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/brb-1.10.0-rc5+1.21.jar",
       "sha1": "5831fc725b9834cef7b445913a701310536b17ab"
@@ -653,6 +659,12 @@
       "name": "polymer-bundled-0.9.19+1.21.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/polymer-bundled-0.9.19+1.21.1.jar",
       "sha1": "15a58f43a672ed486bee4f7983ae8ff566a6b5e7"
+    }
+    ,
+    {
+      "name": "prickle-fabric-1.21.1-21.1.2.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/prickle-fabric-1.21.1-21.1.2.jar",
+      "sha1": "a0663f9515f7bd35c3d2d0635ec0466703d99117"
     }
     ,
     {
