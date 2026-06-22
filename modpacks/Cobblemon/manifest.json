@@ -464,6 +464,12 @@
     }
     ,
     {
+      "name": "litematica-fabric-1.21.11-0.25.1.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/litematica-fabric-1.21.11-0.25.1.jar",
+      "sha1": "7f52aea46a2e5f4365c9dd0901b6810edfcb3c7e"
+    }
+    ,
+    {
       "name": "lithium-fabric-0.15.2+mc1.21.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/lithium-fabric-0.15.2+mc1.21.1.jar",
       "sha1": "72d9c51e9ece62018f290bfbbf7bbb87190cc7ed"
