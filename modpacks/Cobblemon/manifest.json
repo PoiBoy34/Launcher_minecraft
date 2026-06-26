@@ -116,6 +116,12 @@
     }
     ,
     {
+      "name": "c2me-fabric-mc1.21.1-0.4.0-alpha.0.16.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/c2me-fabric-mc1.21.1-0.4.0-alpha.0.16.jar",
+      "sha1": "be8610af385175f91845590e58e8c11c3f4a9627"
+    }
+    ,
+    {
       "name": "capturexp-fabric-1.7.3-1.3.0.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/capturexp-fabric-1.7.3-1.3.0.jar",
       "sha1": "fe935920b30c7cce657c2fa5e4dd27f36ea640cf"
@@ -575,6 +581,12 @@
       "name": "netherportalfix-fabric-1.21.1-21.1.3.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/netherportalfix-fabric-1.21.1-21.1.3.jar",
       "sha1": "970677295778926b09c3539b38e884854bc4d3c7"
+    }
+    ,
+    {
+      "name": "noisium-fabric-2.7.0+mc1.21-1.21.1.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/noisium-fabric-2.7.0+mc1.21-1.21.1.jar",
+      "sha1": "b202a0d63069ad80a802bb20936b254252a4dae0"
     }
     ,
     {
