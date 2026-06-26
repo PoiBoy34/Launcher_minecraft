@@ -608,6 +608,12 @@
     }
     ,
     {
+      "name": "oritech-fabric-1.21.1-1.2.8.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/oritech-fabric-1.21.1-1.2.8.jar",
+      "sha1": "3564e7ce612f2bd080c727ca42ef7b0ffe2b0f4b"
+    }
+    ,
+    {
       "name": "owo-lib-0.12.15.4+1.21.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/mods/owo-lib-0.12.15.4+1.21.jar",
       "sha1": "45725e6d33b624e565a7a6e5d3627af40814288d"
