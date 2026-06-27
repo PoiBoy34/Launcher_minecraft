@@ -6,8 +6,10 @@
       "version": "1.0.0",
       "minecraft": "1.21.1",
       "loader": "fabric",
-      "description": "Attrapez-les tous dans Minecraft ! Modpack bas\u00e9 sur Cobblemon pour le serveur.",
+      "loader_version": "0.18.4",
+      "description": "Attrapez-les tous dans Minecraft ! Modpack basé sur Cobblemon pour le serveur.",
       "icon_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/assets/pack-icons/cobblemon.png",
+      "background_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/assets/pack-backgrounds/cobblemon.png",
       "manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/manifest.json",
       "datapacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/datapacks_manifest.json",
       "shaderpacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/shaderpacks_manifest.json",
@@ -15,6 +17,24 @@
       "servers_dat_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/servers.dat",
       "defaults_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Cobblemon/defaults.zip",
       "defaults_sha1": "4d482a77399464a440d6d8cb0a5a03e80d45bd2d"
+    },
+    {
+      "id": "pack_timerift",
+      "name": "Time Rift Universe",
+      "version": "1.0.0",
+      "minecraft": "1.20.1",
+      "loader": "forge",
+      "loader_version": "47.4.0",
+      "description": "Hello, welcome to Time Rift Universe; I hope you enjoy the island, hahaha.",
+      "icon_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/assets/pack-icons/timerift.png",
+      "background_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/assets/pack-backgrounds/timerift.jpg",
+      "manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/manifest.json",
+      "datapacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/datapacks_manifest.json",
+      "shaderpacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/shaderpacks_manifest.json",
+      "resourcepacks_manifest_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/resourcepacks_manifest.json",
+      "servers_dat_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/servers.dat",
+      "defaults_url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/defaults.zip",
+      "defaults_sha1": "4adc4d7e861f44af25b4139c08536a1e09ac6286"
     }
   ]
 }

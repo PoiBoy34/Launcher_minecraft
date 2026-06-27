@@ -6,7 +6,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;500;700&display=swap');
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Exo 2', sans-serif; background: #0a0a1a; color: #eee; height: 100vh; overflow: hidden; position: relative; }
-  #bg { position: fixed; inset: 0; z-index: 0; background-image: url('bg.png'); background-size: cover; background-position: center; filter: brightness(0.35); }
+  #bg { position: fixed; inset: 0; z-index: 0; background-image: url('bg.png'); background-size: cover; background-position: center; filter: brightness(0.35); transition: opacity 0.3s ease; }
   #overlay { position: fixed; inset: 0; z-index: 1; background: linear-gradient(135deg, rgba(10,10,40,0.7) 0%, rgba(30,0,60,0.5) 50%, rgba(10,10,40,0.8) 100%); }
   #app { position: relative; z-index: 2; display: flex; flex-direction: column; height: 100vh; padding: 20px 28px; }
   #header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
@@ -96,14 +96,12 @@
   <div id="bg"></div>
   <div id="overlay"></div>
 
-  <!-- Update Banner -->
   <div id="update-banner">
     <span id="update-text"></span>
     <button id="update-action" class="banner-btn">Télécharger</button>
     <button id="update-close" class="banner-close">✕</button>
   </div>
 
-  <!-- Settings Panel -->
   <div id="settings-panel">
     <div class="settings-box">
       <div class="settings-title">
@@ -163,8 +161,8 @@
       <div class="logo-block">
         <div class="logo-icon">⚡</div>
         <div>
-          <div class="logo-text">PokéLauncher</div>
-          <div class="logo-sub">Cobblemon Edition</div>
+          <div class="logo-text">SUS-Launcher</div>
+          <div class="logo-sub">Multi-Modpacks</div>
         </div>
       </div>
       <div id="auth-block">
@@ -222,17 +220,18 @@
       document.getElementById('settings-panel').classList.remove('open');
   });
 
-  document.getElementById('btn-open-mods').addEventListener('click', () => window.api.openFolder('mods'));
-  document.getElementById('btn-open-datapacks').addEventListener('click', () => window.api.openFolder('datapacks'));
-  document.getElementById('btn-open-shaderpacks').addEventListener('click', () => window.api.openFolder('shaderpacks'));
-  document.getElementById('btn-open-resourcepacks').addEventListener('click', () => window.api.openFolder('resourcepacks'));
-  document.getElementById('btn-open-screenshots').addEventListener('click', () => window.api.openFolder('screenshots'));
-  document.getElementById('btn-open-game').addEventListener('click', () => window.api.openFolder('game'));
+  document.getElementById('btn-open-mods').addEventListener('click', () => { if(selectedPack) window.api.openFolder('mods', selectedPack.id); });
+  document.getElementById('btn-open-datapacks').addEventListener('click', () => { if(selectedPack) window.api.openFolder('datapacks', selectedPack.id); });
+  document.getElementById('btn-open-shaderpacks').addEventListener('click', () => { if(selectedPack) window.api.openFolder('shaderpacks', selectedPack.id); });
+  document.getElementById('btn-open-resourcepacks').addEventListener('click', () => { if(selectedPack) window.api.openFolder('resourcepacks', selectedPack.id); });
+  document.getElementById('btn-open-screenshots').addEventListener('click', () => { if(selectedPack) window.api.openFolder('screenshots', selectedPack.id); });
+  document.getElementById('btn-open-game').addEventListener('click', () => { if(selectedPack) window.api.openFolder('game', selectedPack.id); });
 
   // Réinitialiser keybinds & configs
   document.getElementById('btn-reset-defaults').addEventListener('click', () => {
-    if (confirm('Réinitialiser les keybinds, options et minimap aux valeurs par défaut ?\n\nCela écrasera tes paramètres actuels au prochain lancement.')) {
-      window.api.resetDefaults();
+    if (!selectedPack) return;
+    if (confirm('Réinitialiser les keybinds, options et minimap aux valeurs par défaut pour ' + selectedPack.name + ' ?\n\nCela écrasera tes paramètres actuels au prochain lancement.')) {
+      window.api.resetDefaults(selectedPack.id);
     }
   });
 
@@ -329,7 +328,21 @@
     document.getElementById('sel-icon').textContent = '⚡';
     document.getElementById('sel-name').textContent = pack.name;
     document.getElementById('sel-meta').textContent = 'Minecraft ' + pack.minecraft + ' · ' + pack.loader + ' · v' + pack.version;
+    setBackground(pack.background_url);
     updatePlayBtn();
+  }
+
+  // Change le fond selon le pack sélectionné (fondu).
+  // pack.background_url peut être une URL complète OU un fichier local (ex: "bg-timerift.png").
+  // Si absent, on retombe sur le bg.png par défaut.
+  function setBackground(bgUrl) {
+    const bg = document.getElementById('bg');
+    const target = bgUrl && bgUrl.trim() ? bgUrl : 'bg.png';
+    bg.style.opacity = '0';
+    setTimeout(() => {
+      bg.style.backgroundImage = `url('${target}')`;
+      bg.style.opacity = '1';
+    }, 250);
   }
 
   function updatePlayBtn() {

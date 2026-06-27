@@ -52,8 +52,8 @@ function createWindow() {
         width: 960, height: 620,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            contextIsolation: true,
-            nodeIntegration: false
+                                  contextIsolation: true,
+                                  nodeIntegration: false
         }
     });
     win.loadFile(path.join(__dirname, 'index.html'));
@@ -129,27 +129,30 @@ ipcMain.on('login-microsoft', async (event) => {
     }
 });
 
-ipcMain.on('open-folder', (event, type) => {
-    const baseDir = path.join(app.getPath('userData'), 'instances');
+ipcMain.on('open-folder', (event, type, packId) => {
+    if (!packId) return; // Sécurité si aucun pack n'est sélectionné
+
+    const baseDir = path.join(app.getPath('userData'), 'instances', packId);
     const dirs = {
-        mods:          path.join(baseDir, 'pack_cobblemon', 'mods'),
-        datapacks:     path.join(baseDir, 'pack_cobblemon', 'datapacks'),
-        shaderpacks:   path.join(baseDir, 'pack_cobblemon', 'shaderpacks'),
-        resourcepacks: path.join(baseDir, 'pack_cobblemon', 'resourcepacks'),
-        screenshots:   path.join(baseDir, 'pack_cobblemon', 'screenshots'),
-        game:          path.join(baseDir, 'pack_cobblemon')
+        mods:          path.join(baseDir, 'mods'),
+           datapacks:     path.join(baseDir, 'datapacks'),
+           shaderpacks:   path.join(baseDir, 'shaderpacks'),
+           resourcepacks: path.join(baseDir, 'resourcepacks'),
+           screenshots:   path.join(baseDir, 'screenshots'),
+           game:          baseDir
     };
     const target = dirs[type] || dirs.game;
     if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
     shell.openPath(target);
 });
 
-ipcMain.on('reset-defaults', (event) => {
-    const gameDir = path.join(app.getPath('userData'), 'instances', 'pack_cobblemon');
+ipcMain.on('reset-defaults', (event, packId) => {
+    if (!packId) return;
+    const gameDir = path.join(app.getPath('userData'), 'instances', packId);
     const markerPath = path.join(gameDir, '.defaults_installed');
     if (fs.existsSync(markerPath)) {
         fs.unlinkSync(markerPath);
-        console.log('[MC] Marker defaults supprimé, sera réinstallé au prochain lancement');
+        console.log(`[MC] Marker defaults supprimé, sera réinstallé au prochain lancement pour ${packId}`);
     }
     event.sender.send('defaults-reset');
 });
@@ -180,9 +183,9 @@ function fetchWithRedirect(url) {
             if (res.statusCode === 301 || res.statusCode === 302 ||
                 res.statusCode === 307 || res.statusCode === 308) {
                 fetchWithRedirect(res.headers.location).then(resolve).catch(reject);
-                return;
-            }
-            resolve(res);
+            return;
+                }
+                resolve(res);
         }).on('error', reject);
     });
 }
@@ -215,6 +218,40 @@ async function setupFabric(gameDir, mcVersion, loaderVersion) {
 
     console.log('[MC] Profil Fabric installé : ' + customName);
     return customName;
+}
+
+async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
+    fs.mkdirSync(gameDir, { recursive: true });
+
+    const installerName = `forge-${mcVersion}-${forgeVersion}-installer.jar`;
+    const installerPath = path.join(gameDir, installerName);
+
+    // Déjà téléchargé (et non corrompu) → on réutilise.
+    if (fs.existsSync(installerPath) && fs.statSync(installerPath).size > 0) {
+        return installerPath;
+    }
+
+    const url = `https://maven.minecraftforge.net/net/minecraftforge/forge/` +
+                `${mcVersion}-${forgeVersion}/forge-${mcVersion}-${forgeVersion}-installer.jar`;
+
+    if (onStatus) onStatus("Téléchargement de Forge " + forgeVersion + "...");
+
+    const res = await fetchWithRedirect(url);
+    if (res.statusCode !== 200) {
+        throw new Error(`Installer Forge introuvable (HTTP ${res.statusCode}) pour ${mcVersion}-${forgeVersion}`);
+    }
+
+    await new Promise((resolve, reject) => {
+        const file = fs.createWriteStream(installerPath);
+        res.pipe(file);
+        file.on('finish', () => file.close(resolve));
+        file.on('error', (err) => { fs.unlink(installerPath, () => {}); reject(err); });
+    });
+
+    console.log('[MC] Installer Forge téléchargé : ' + installerName);
+    // minecraft-launcher-core se charge d'exécuter l'installer et de générer
+    // le profil de version Forge à partir de ce jar (option `forge`).
+    return installerPath;
 }
 
 async function setupServersDat(gameDir, fileUrl) {
@@ -271,11 +308,14 @@ async function setupDefaults(gameDir, defaultsUrl) {
     }
 }
 
-function activateResourcepacks(gameDir, resourcepacksDir) {
+function activateResourcepacks(gameDir, resourcepacksDir, loader) {
     if (!fs.existsSync(resourcepacksDir)) return;
     const optionsPath = path.join(gameDir, 'options.txt');
     const installedRPs = fs.readdirSync(resourcepacksDir).filter(f => f.endsWith('.zip'));
-    const packs = ['"vanilla"', '"fabric"'];
+    const packs = ['"vanilla"'];
+    // Le pack intégré "fabric" n'existe que sous Fabric (Fabric Resource Loader).
+    // Sous Forge, les ressources des mods sont chargées via le loader, pas via options.txt.
+    if (loader === 'fabric') packs.push('"fabric"');
     for (const rp of installedRPs) {
         packs.push(`"file/${rp}"`);
     }
@@ -318,9 +358,9 @@ ipcMain.on('launch-game', async (event, packData) => {
         await syncMods(
             packData.manifest_url, modsDir,
             (msg) => event.sender.send('sync-status', { message: msg }),
-            (fileName, received, total) => event.sender.send('sync-progress', {
-                fileName, pct: Math.round((received / total) * 100)
-            })
+                       (fileName, received, total) => event.sender.send('sync-progress', {
+                           fileName, pct: Math.round((received / total) * 100)
+                       })
         );
     } catch (err) {
         event.sender.send('launch-error', "Erreur sync mods : " + err.message);
@@ -332,9 +372,9 @@ ipcMain.on('launch-game', async (event, packData) => {
             await syncDatapacks(
                 packData.datapacks_manifest_url, datapacksDir,
                 (msg) => event.sender.send('sync-status', { message: msg }),
-                (fileName, received, total) => event.sender.send('sync-progress', {
-                    fileName, pct: Math.round((received / total) * 100)
-                })
+                                (fileName, received, total) => event.sender.send('sync-progress', {
+                                    fileName, pct: Math.round((received / total) * 100)
+                                })
             );
         } catch (err) {
             event.sender.send('sync-status', { message: "Avertissement datapacks : " + err.message });
@@ -346,9 +386,9 @@ ipcMain.on('launch-game', async (event, packData) => {
             await syncShaderpacks(
                 packData.shaderpacks_manifest_url, shaderpacksDir,
                 (msg) => event.sender.send('sync-status', { message: msg }),
-                (fileName, received, total) => event.sender.send('sync-progress', {
-                    fileName, pct: Math.round((received / total) * 100)
-                })
+                                  (fileName, received, total) => event.sender.send('sync-progress', {
+                                      fileName, pct: Math.round((received / total) * 100)
+                                  })
             );
         } catch (err) {
             event.sender.send('sync-status', { message: "Avertissement shaders : " + err.message });
@@ -360,9 +400,9 @@ ipcMain.on('launch-game', async (event, packData) => {
             await syncResourcepacks(
                 packData.resourcepacks_manifest_url, resourcepacksDir,
                 (msg) => event.sender.send('sync-status', { message: msg }),
-                (fileName, received, total) => event.sender.send('sync-progress', {
-                    fileName, pct: Math.round((received / total) * 100)
-                })
+                                    (fileName, received, total) => event.sender.send('sync-progress', {
+                                        fileName, pct: Math.round((received / total) * 100)
+                                    })
             );
         } catch (err) {
             event.sender.send('sync-status', { message: "Avertissement RP : " + err.message });
@@ -378,13 +418,13 @@ ipcMain.on('launch-game', async (event, packData) => {
             const baseName = part00.replace('.part00', '');
             const finalPath = path.join(modsDir, baseName);
             const partPaths = allFiles
-                .filter(f => f.startsWith(baseName + '.part'))
-                .map(f => path.join(modsDir, f));
+            .filter(f => f.startsWith(baseName + '.part'))
+            .map(f => path.join(modsDir, f));
             const totalPartsSize = partPaths.reduce((sum, p) => sum + fs.statSync(p).size, 0);
             if (!fs.existsSync(finalPath) || fs.statSync(finalPath).size !== totalPartsSize) {
                 event.sender.send('sync-status', { message: 'Assemblage : ' + baseName + '...' });
                 await assembleParts(modsDir, baseName, (msg) =>
-                    event.sender.send('sync-status', { message: msg })
+                event.sender.send('sync-status', { message: msg })
                 );
             }
         }
@@ -393,23 +433,48 @@ ipcMain.on('launch-game', async (event, packData) => {
         return;
     }
 
+    const loader = (packData.loader || 'fabric').toLowerCase();
+
     event.sender.send('sync-status', { message: "Activation des resource packs..." });
-    activateResourcepacks(gameDir, resourcepacksDir);
+    activateResourcepacks(gameDir, resourcepacksDir, loader);
 
     try {
-        event.sender.send('sync-status', { message: "Installation de Fabric..." });
-        const fabricVersion = await setupFabric(gameDir, packData.minecraft, "0.18.4");
+        let opts;
 
-        const opts = {
-            authorization: mcToken.mclc(),
-            root: gameDir,
-            version: {
-                number: packData.minecraft,
-                type: "release",
-                custom: fabricVersion
-            },
-            memory: { max: ram + "G", min: "2G" }
-        };
+        if (loader === 'forge') {
+            const forgeVersion = packData.loader_version || "47.4.10";
+            event.sender.send('sync-status', { message: "Installation de Forge " + forgeVersion + "..." });
+            const forgeInstaller = await setupForge(
+                gameDir, packData.minecraft, forgeVersion,
+                (msg) => event.sender.send('sync-status', { message: msg })
+            );
+
+            opts = {
+                authorization: mcToken.mclc(),
+                root: gameDir,
+                version: {
+                    number: packData.minecraft,
+                    type: "release"
+                },
+                forge: forgeInstaller,
+                memory: { max: ram + "G", min: "2G" }
+            };
+        } else {
+            const loaderVersion = packData.loader_version || "0.18.4";
+            event.sender.send('sync-status', { message: "Installation de Fabric..." });
+            const fabricVersion = await setupFabric(gameDir, packData.minecraft, loaderVersion);
+
+            opts = {
+                authorization: mcToken.mclc(),
+                root: gameDir,
+                version: {
+                    number: packData.minecraft,
+                    type: "release",
+                    custom: fabricVersion
+                },
+                memory: { max: ram + "G", min: "2G" }
+            };
+        }
 
         event.sender.send('sync-status', { message: "Démarrage de Minecraft..." });
         await launcher.launch(opts);

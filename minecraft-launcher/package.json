@@ -1,7 +1,7 @@
 {
-  "name": "minecraft-launcher",
-  "version": "1.1.2",
-  "description": "Un launcher custom pour Cobblemon",
+  "name": "sus-launcher",
+  "version": "1.1.3",
+  "description": "SUS-Launcher — launcher custom multi-modpacks (Cobblemon, Time Rift Universe, ...)",
   "author": "PoiBoy34",
   "main": "src/index.js",
   "scripts": {
@@ -30,7 +30,7 @@
   },
   "build": {
     "appId": "com.poiboy.launcher",
-    "productName": "Cobblemon Launcher",
+    "productName": "SUS-Launcher",
     "asar": false,
     "directories": {
       "output": "dist"
