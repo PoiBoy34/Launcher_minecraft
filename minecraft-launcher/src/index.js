@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const https = require('https');
 const AdmZip = require('adm-zip');
+const tar = require('tar');
 const { Client } = require('minecraft-launcher-core');
 const { Auth } = require('msmc');
 const { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks, syncResourcepacks } = require('./modSync');
@@ -336,6 +337,74 @@ function activateResourcepacks(gameDir, resourcepacksDir, loader) {
     console.log('[MC] options.txt mis à jour avec ' + installedRPs.length + ' resource packs');
 }
 
+// Télécharge un Java 21 portable (Temurin/Adoptium) une seule fois,
+// commun à tous les modpacks, et renvoie le chemin du binaire java.
+function findJavaBinary(dir) {
+    const exe = process.platform === 'win32' ? 'javaw.exe' : 'java';
+    const stack = [dir];
+    while (stack.length) {
+        const cur = stack.pop();
+        let entries;
+        try { entries = fs.readdirSync(cur, { withFileTypes: true }); } catch (e) { continue; }
+        for (const ent of entries) {
+            const full = path.join(cur, ent.name);
+            if (ent.isDirectory()) stack.push(full);
+            else if (ent.name === exe && path.basename(cur) === 'bin') return full;
+        }
+    }
+    return null;
+}
+
+function downloadToFile(url, destPath) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const res = await fetchWithRedirect(url);
+            if (res.statusCode !== 200) { reject(new Error('HTTP ' + res.statusCode)); return; }
+            const file = fs.createWriteStream(destPath);
+            res.pipe(file);
+            file.on('finish', () => file.close(resolve));
+            file.on('error', reject);
+        } catch (err) { reject(err); }
+    });
+}
+
+async function setupJava(onStatus) {
+    const javaRoot = path.join(app.getPath('userData'), 'java', 'jre21');
+
+    // Déjà installé ? On réutilise.
+    const existing = findJavaBinary(javaRoot);
+    if (existing && fs.existsSync(existing)) return existing;
+
+    const platform = process.platform === 'win32' ? 'windows'
+                   : process.platform === 'darwin' ? 'mac' : 'linux';
+    const arch = process.arch === 'arm64' ? 'aarch64' : 'x64';
+    const ext = platform === 'windows' ? 'zip' : 'tar.gz';
+    const url = `https://api.adoptium.net/v3/binary/latest/21/ga/${platform}/${arch}/jre/hotspot/normal/eclipse`;
+
+    fs.mkdirSync(javaRoot, { recursive: true });
+    const archivePath = path.join(javaRoot, 'jre21.' + ext);
+
+    if (onStatus) onStatus("Téléchargement de Java 21 (une seule fois)...");
+    await downloadToFile(url, archivePath);
+
+    if (onStatus) onStatus("Installation de Java 21...");
+    if (ext === 'zip') {
+        const zip = new AdmZip(archivePath);
+        zip.extractAllTo(javaRoot, true);
+    } else {
+        await tar.x({ file: archivePath, cwd: javaRoot });
+    }
+    fs.unlinkSync(archivePath);
+
+    const bin = findJavaBinary(javaRoot);
+    if (!bin) throw new Error("binaire Java introuvable après extraction");
+    if (process.platform !== 'win32') {
+        try { fs.chmodSync(bin, 0o755); } catch (e) {}
+    }
+    console.log('[MC] Java 21 prêt : ' + bin);
+    return bin;
+}
+
 ipcMain.on('launch-game', async (event, packData) => {
     if (!mcToken) {
         event.sender.send('launch-error', "Lancement impossible : pas de token");
@@ -438,6 +507,16 @@ ipcMain.on('launch-game', async (event, packData) => {
     event.sender.send('sync-status', { message: "Activation des resource packs..." });
     activateResourcepacks(gameDir, resourcepacksDir, loader);
 
+    // Java 21 fourni par le launcher (commun à tous les packs).
+    // En cas d'échec, on retombe sur le Java système (cf. README).
+    let javaPath = null;
+    try {
+        javaPath = await setupJava((msg) => event.sender.send('sync-status', { message: msg }));
+    } catch (err) {
+        console.error('[MC] Java auto indisponible :', err.message);
+        event.sender.send('sync-status', { message: "Java auto indisponible, utilisation du Java système..." });
+    }
+
     try {
         let opts;
 
@@ -459,6 +538,7 @@ ipcMain.on('launch-game', async (event, packData) => {
                 forge: forgeInstaller,
                 memory: { max: ram + "G", min: "2G" }
             };
+            if (javaPath) opts.javaPath = javaPath;
         } else {
             const loaderVersion = packData.loader_version || "0.18.4";
             event.sender.send('sync-status', { message: "Installation de Fabric..." });
@@ -474,6 +554,7 @@ ipcMain.on('launch-game', async (event, packData) => {
                 },
                 memory: { max: ram + "G", min: "2G" }
             };
+            if (javaPath) opts.javaPath = javaPath;
         }
 
         event.sender.send('sync-status', { message: "Démarrage de Minecraft..." });
