@@ -344,12 +344,6 @@
     }
     ,
     {
-      "name": "dyenamicsandfriends-1.20.1-1.9.3.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/dyenamicsandfriends-1.20.1-1.9.3.jar",
-      "sha1": "db59d4a2ca5e98d2aeeb7df72961a9cd50587883"
-    }
-    ,
-    {
       "name": "dye_the_world-1.7.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/dye_the_world-1.7.1.jar",
       "sha1": "e3751aff755dd1527804ad8d90376e6d1f45eb5a"
