@@ -53,7 +53,7 @@ If the game **crashes on launch** or shows a **Java-related error**, you're miss
 
 ➡️ **Install Java 21**, then restart the launcher.
 
-You can download it for free here: **https://adoptium.net/temurin/releases/?version=21**
+You can download it for free here: **[https://adoptium.net/temurin/releases/?version=21](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)**
 (pick your operating system, choose **JDK 21**).
 
 Once Java 21 is installed, the modpack launches normally.
