@@ -446,6 +446,12 @@
     }
     ,
     {
+      "name": "freecam-forge-1.2.1+1.20.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/freecam-forge-1.2.1+1.20.jar",
+      "sha1": "e4224b56750a1fe3956ae73a65f4470be3e0df3b"
+    }
+    ,
+    {
       "name": "ftb-chunks-forge-2001.3.8.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/ftb-chunks-forge-2001.3.8.jar",
       "sha1": "ee2d0cdac6d2ca31f43da30f76dff8c6bae9d687"
