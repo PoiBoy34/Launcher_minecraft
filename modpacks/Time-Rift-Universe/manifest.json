@@ -182,12 +182,6 @@
     }
     ,
     {
-      "name": "connectedglass-1.1.14-forge-mc1.20.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/connectedglass-1.1.14-forge-mc1.20.1.jar",
-      "sha1": "2f65edcf4faed33979d5dec81597b472abf17325"
-    }
-    ,
-    {
       "name": "connected_signs-1.0.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/connected_signs-1.0.1.jar",
       "sha1": "dc70f67016643d2e863e3c876a57ca63f6e9694d"
