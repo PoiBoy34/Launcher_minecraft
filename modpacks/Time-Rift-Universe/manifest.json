@@ -170,12 +170,6 @@
     }
     ,
     {
-      "name": "comforts-forge-6.4.0+1.20.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/comforts-forge-6.4.0+1.20.1.jar",
-      "sha1": "e7b9fe89566bb1ee013e33745f22f309f679536e"
-    }
-    ,
-    {
       "name": "common-networking-forge-1.0.5-1.20.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/common-networking-forge-1.0.5-1.20.1.jar",
       "sha1": "986597ae06f01c9209c111ba6276a171e8977a2c"
