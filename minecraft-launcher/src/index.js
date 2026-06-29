@@ -405,6 +405,78 @@ async function setupJava(onStatus) {
     return bin;
 }
 
+// ---------------------------------------------------------------------------
+// Synchronisation complète d'un pack (mods + datapacks + shaders + RP + assemblage)
+// Factorisée pour être réutilisée à la fois par le lancement et par le bouton
+// "Synchroniser maintenant". L'échec sur les MODS est fatal (exception levée) ;
+// les autres catégories ne génèrent qu'un avertissement.
+// ---------------------------------------------------------------------------
+async function syncAllContent(event, packData, gameDir) {
+    const modsDir          = path.join(gameDir, 'mods');
+    const datapacksDir     = path.join(gameDir, 'datapacks');
+    const shaderpacksDir   = path.join(gameDir, 'shaderpacks');
+    const resourcepacksDir = path.join(gameDir, 'resourcepacks');
+
+    const statusCb = (msg) => event.sender.send('sync-status', { message: msg });
+    const progressCb = (fileName, received, total) => event.sender.send('sync-progress', {
+        fileName, pct: Math.round((received / total) * 100)
+    });
+
+    // Mods : échec = fatal (on laisse remonter l'exception au caller).
+    await syncMods(packData.manifest_url, modsDir, statusCb, progressCb);
+
+    if (packData.datapacks_manifest_url) {
+        try { await syncDatapacks(packData.datapacks_manifest_url, datapacksDir, statusCb, progressCb); }
+        catch (err) { statusCb("Avertissement datapacks : " + err.message); }
+    }
+
+    if (packData.shaderpacks_manifest_url) {
+        try { await syncShaderpacks(packData.shaderpacks_manifest_url, shaderpacksDir, statusCb, progressCb); }
+        catch (err) { statusCb("Avertissement shaders : " + err.message); }
+    }
+
+    if (packData.resourcepacks_manifest_url) {
+        try { await syncResourcepacks(packData.resourcepacks_manifest_url, resourcepacksDir, statusCb, progressCb); }
+        catch (err) { statusCb("Avertissement RP : " + err.message); }
+    }
+
+    // Assemblage des mods splittés (.partXX)
+    const allFiles = fs.readdirSync(modsDir);
+    for (const part00 of allFiles.filter(f => f.endsWith('.part00'))) {
+        const baseName = part00.replace('.part00', '');
+        const finalPath = path.join(modsDir, baseName);
+        const partPaths = allFiles
+            .filter(f => f.startsWith(baseName + '.part'))
+            .map(f => path.join(modsDir, f));
+        const totalPartsSize = partPaths.reduce((sum, p) => sum + fs.statSync(p).size, 0);
+        if (!fs.existsSync(finalPath) || fs.statSync(finalPath).size !== totalPartsSize) {
+            statusCb('Assemblage : ' + baseName + '...');
+            await assembleParts(modsDir, baseName, statusCb);
+        }
+    }
+}
+
+// Synchronisation manuelle à la demande (bouton "Synchroniser maintenant").
+// Force toujours une vraie synchro, indépendamment du réglage auto-sync.
+ipcMain.on('sync-now', async (event, packData) => {
+    if (!packData || !packData.id) return;
+    const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
+    try {
+        if (packData.defaults_url) {
+            event.sender.send('sync-status', { message: "Installation des configurations..." });
+            await setupDefaults(gameDir, packData.defaults_url);
+        }
+        await syncAllContent(event, packData, gameDir);
+        const loader = (packData.loader || 'fabric').toLowerCase();
+        activateResourcepacks(gameDir, path.join(gameDir, 'resourcepacks'), loader);
+        event.sender.send('sync-status', { message: "Synchronisation terminée ✓" });
+    } catch (err) {
+        event.sender.send('sync-status', { message: "Erreur sync : " + err.message });
+    } finally {
+        event.sender.send('sync-done');
+    }
+});
+
 ipcMain.on('launch-game', async (event, packData) => {
     if (!mcToken) {
         event.sender.send('launch-error', "Lancement impossible : pas de token");
@@ -414,8 +486,6 @@ ipcMain.on('launch-game', async (event, packData) => {
     const ram = packData.ram || 4;
     const gameDir = path.join(app.getPath('userData'), 'instances', packData.id);
     const modsDir = path.join(gameDir, 'mods');
-    const datapacksDir = path.join(gameDir, 'datapacks');
-    const shaderpacksDir = path.join(gameDir, 'shaderpacks');
     const resourcepacksDir = path.join(gameDir, 'resourcepacks');
 
     if (packData.defaults_url) {
@@ -423,84 +493,34 @@ ipcMain.on('launch-game', async (event, packData) => {
         await setupDefaults(gameDir, packData.defaults_url);
     }
 
+    // --- Décision de synchronisation ---------------------------------------
+    // autoSync (défaut true) : synchro stricte à chaque lancement.
+    // autoSync false (mode libre) : on saute la synchro pour laisser le joueur
+    // gérer/retirer ses propres mods. Exception : si le dossier mods est vide
+    // (première installation), on force quand même une synchro pour ne pas
+    // lancer un pack sans aucun mod.
+    const autoSync = packData.autoSync !== false;
+    let modsPresent = false;
     try {
-        await syncMods(
-            packData.manifest_url, modsDir,
-            (msg) => event.sender.send('sync-status', { message: msg }),
-                       (fileName, received, total) => event.sender.send('sync-progress', {
-                           fileName, pct: Math.round((received / total) * 100)
-                       })
-        );
-    } catch (err) {
-        event.sender.send('launch-error', "Erreur sync mods : " + err.message);
-        return;
-    }
+        modsPresent = fs.existsSync(modsDir) &&
+            fs.readdirSync(modsDir).some(f => f.endsWith('.jar') || f.endsWith('.part00'));
+    } catch (e) {}
 
-    if (packData.datapacks_manifest_url) {
-        try {
-            await syncDatapacks(
-                packData.datapacks_manifest_url, datapacksDir,
-                (msg) => event.sender.send('sync-status', { message: msg }),
-                                (fileName, received, total) => event.sender.send('sync-progress', {
-                                    fileName, pct: Math.round((received / total) * 100)
-                                })
-            );
-        } catch (err) {
-            event.sender.send('sync-status', { message: "Avertissement datapacks : " + err.message });
-        }
-    }
+    const doSync = autoSync || !modsPresent;
 
-    if (packData.shaderpacks_manifest_url) {
+    if (doSync) {
         try {
-            await syncShaderpacks(
-                packData.shaderpacks_manifest_url, shaderpacksDir,
-                (msg) => event.sender.send('sync-status', { message: msg }),
-                                  (fileName, received, total) => event.sender.send('sync-progress', {
-                                      fileName, pct: Math.round((received / total) * 100)
-                                  })
-            );
+            await syncAllContent(event, packData, gameDir);
         } catch (err) {
-            event.sender.send('sync-status', { message: "Avertissement shaders : " + err.message });
+            event.sender.send('launch-error', "Erreur sync mods : " + err.message);
+            return;
         }
-    }
-
-    if (packData.resourcepacks_manifest_url) {
-        try {
-            await syncResourcepacks(
-                packData.resourcepacks_manifest_url, resourcepacksDir,
-                (msg) => event.sender.send('sync-status', { message: msg }),
-                                    (fileName, received, total) => event.sender.send('sync-progress', {
-                                        fileName, pct: Math.round((received / total) * 100)
-                                    })
-            );
-        } catch (err) {
-            event.sender.send('sync-status', { message: "Avertissement RP : " + err.message });
-        }
+    } else {
+        event.sender.send('sync-status', { message: "Mode libre : mods gérés manuellement, synchronisation ignorée" });
     }
 
     event.sender.send('sync-status', { message: "Configuration serveur multijoueur..." });
     await setupServersDat(gameDir, packData.servers_dat_url);
-
-    try {
-        const allFiles = fs.readdirSync(modsDir);
-        for (const part00 of allFiles.filter(f => f.endsWith('.part00'))) {
-            const baseName = part00.replace('.part00', '');
-            const finalPath = path.join(modsDir, baseName);
-            const partPaths = allFiles
-            .filter(f => f.startsWith(baseName + '.part'))
-            .map(f => path.join(modsDir, f));
-            const totalPartsSize = partPaths.reduce((sum, p) => sum + fs.statSync(p).size, 0);
-            if (!fs.existsSync(finalPath) || fs.statSync(finalPath).size !== totalPartsSize) {
-                event.sender.send('sync-status', { message: 'Assemblage : ' + baseName + '...' });
-                await assembleParts(modsDir, baseName, (msg) =>
-                event.sender.send('sync-status', { message: msg })
-                );
-            }
-        }
-    } catch (err) {
-        event.sender.send('launch-error', "Erreur assemblage : " + err.message);
-        return;
-    }
 
     const loader = (packData.loader || 'fabric').toLowerCase();
 
