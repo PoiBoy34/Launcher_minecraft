@@ -380,6 +380,12 @@
     }
     ,
     {
+      "name": "ExplorersCompass-1.20.1-1.4.0-forge.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/ExplorersCompass-1.20.1-1.4.0-forge.jar",
+      "sha1": "23b7544ab3ebd1ab9c88255434ff9dc7f217766b"
+    }
+    ,
+    {
       "name": "fabledweaponry-1.20.1-1.0.7.5.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/fabledweaponry-1.20.1-1.0.7.5.jar",
       "sha1": "281d7539ddb2637b3f2676752b3b461a9df534e9"
@@ -620,9 +626,27 @@
     }
     ,
     {
+      "name": "letsdo-bakery-forge-1.1.15.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/letsdo-bakery-forge-1.1.15.jar",
+      "sha1": "c5cd44088089fca03f3291b851dcb0d00018fecb"
+    }
+    ,
+    {
+      "name": "letsdo-bakery-forge-2.0.6.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/letsdo-bakery-forge-2.0.6.jar",
+      "sha1": "75f35ba47c07d4af5b8b4e05fcffb74fc1583685"
+    }
+    ,
+    {
       "name": "letsdo-brewery-forge-1.1.9.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/letsdo-brewery-forge-1.1.9.jar",
       "sha1": "50e5181e734dcfc599aa0eaac376ff4e312f63c2"
+    }
+    ,
+    {
+      "name": "letsdo-farm_and_charm-forge-1.0.14.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/letsdo-farm_and_charm-forge-1.0.14.jar",
+      "sha1": "4db017c18fff8356e1aa5f0e9c683f1af30bec2b"
     }
     ,
     {
@@ -695,6 +719,12 @@
       "name": "MouseTweaks-forge-mc1.20.1-2.25.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/MouseTweaks-forge-mc1.20.1-2.25.1.jar",
       "sha1": "d751153e722a4e014691c83f39f5b07c6ec5333c"
+    }
+    ,
+    {
+      "name": "NaturesCompass-1.20.1-1.12.0-forge.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/NaturesCompass-1.20.1-1.12.0-forge.jar",
+      "sha1": "a8589de59cdd8fed9c29610e624063a2990e422b"
     }
     ,
     {
@@ -887,6 +917,12 @@
       "name": "TerraBlender-forge-1.20.1-3.0.1.10.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/TerraBlender-forge-1.20.1-3.0.1.10.jar",
       "sha1": "3bd99fb59e8b06b04e78b5153790c1e08b2be5dc"
+    }
+    ,
+    {
+      "name": "trade-cycling-forge-1.20.1-1.0.18.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/trade-cycling-forge-1.20.1-1.0.18.jar",
+      "sha1": "fbe3dfba11bd9e1c73b673f252c7d4f5cececa06"
     }
     ,
     {
