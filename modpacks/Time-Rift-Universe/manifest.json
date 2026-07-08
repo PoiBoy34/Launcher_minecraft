@@ -668,6 +668,12 @@
     }
     ,
     {
+      "name": "lmft-1.0.4+1.20.1-forge.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/lmft-1.0.4+1.20.1-forge.jar",
+      "sha1": "e44a12eb51813b16faaab89b8073ec63c746c1b0"
+    }
+    ,
+    {
       "name": "longerlogintimes-1.0.0-forge-mc1.20.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/longerlogintimes-1.0.0-forge-mc1.20.jar",
       "sha1": "708e7f8f1dc2955c0331b5fb028fa97720762df3"
