@@ -497,13 +497,95 @@ async function setupFabric(gameDir, mcVersion, loaderVersion) {
     return customName;
 }
 
+// Purge les profils/libs d'une ANCIENNE version de Forge quand la version
+// demandée change. Sans ça, une instance déjà installée en 47.4.0 reste
+// coincée dessus même après un bump du catalog → crash "requires forge X".
+// On ne touche QUE ce qui concerne Forge : mods/, config/, saves/, options.txt
+// sont préservés.
+function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
+    if (onStatus) onStatus("Nettoyage de l'ancienne version de Forge (" + oldForgeVersion + ")...");
+    log.info('[MC] Purge Forge ' + oldForgeVersion + ' avant réinstallation');
+
+    // 1. Profils de version Forge dans versions/ (nom variable selon la génération
+    //    par minecraft-launcher-core : "1.20.1-forge-47.4.0", "forge-47.4.0", etc.)
+    const versionsDir = path.join(gameDir, 'versions');
+    if (fs.existsSync(versionsDir)) {
+        for (const entry of fs.readdirSync(versionsDir)) {
+            const lower = entry.toLowerCase();
+            if (lower.includes('forge')) {
+                try {
+                    fs.rmSync(path.join(versionsDir, entry), { recursive: true, force: true });
+                    log.info('[MC] Supprimé versions/' + entry);
+                } catch (e) { log.error('[MC] Purge versions/' + entry + ' : ' + e.message); }
+            }
+        }
+    }
+
+    // 2. Libs Forge (net/minecraftforge). On ne vire QUE ce dossier : les autres
+    //    libs seront revalidées/retéléchargées par le launcher au besoin.
+    const forgeLibs = path.join(gameDir, 'libraries', 'net', 'minecraftforge');
+    if (fs.existsSync(forgeLibs)) {
+        try {
+            fs.rmSync(forgeLibs, { recursive: true, force: true });
+            log.info('[MC] Supprimé libraries/net/minecraftforge');
+        } catch (e) { log.error('[MC] Purge libs Forge : ' + e.message); }
+    }
+
+    // 3. Anciens installers Forge qui traînent à la racine de l'instance
+    try {
+        for (const f of fs.readdirSync(gameDir)) {
+            if (/^forge-.*-installer\.jar$/.test(f)) {
+                try { fs.unlinkSync(path.join(gameDir, f)); } catch (e) {}
+            }
+        }
+    } catch (e) {}
+}
+
 async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
     fs.mkdirSync(gameDir, { recursive: true });
+
+    // --- Détection de changement de version -------------------------------
+    // Marqueur écrit après une install réussie. S'il ne correspond pas à la
+    // version demandée, on purge l'ancienne install AVANT de réinstaller.
+    const markerPath = path.join(gameDir, '.forge_version');
+    let installedVersion = null;
+    try {
+        if (fs.existsSync(markerPath)) installedVersion = fs.readFileSync(markerPath, 'utf8').trim();
+    } catch (e) {}
+
+    // --- Rattrapage des instances de l'ANCIEN launcher --------------------
+    // Si un profil Forge existe déjà dans versions/ mais qu'il n'y a AUCUN
+    // marqueur, l'instance a été installée par une version du launcher qui ne
+    // gérait pas les bumps de version → on ne connaît pas sa version Forge et
+    // elle peut être périmée/corrompue. Par sécurité on la purge une fois pour
+    // repartir propre. Ne s'exécute qu'une seule fois (ensuite le marqueur existe).
+    if (!installedVersion) {
+        const versionsDir = path.join(gameDir, 'versions');
+        let hasOrphanForge = false;
+        try {
+            hasOrphanForge = fs.existsSync(versionsDir) &&
+                fs.readdirSync(versionsDir).some(e => e.toLowerCase().includes('forge'));
+        } catch (e) {}
+        if (hasOrphanForge) {
+            cleanOldForge(gameDir, mcVersion, 'inconnue', onStatus);
+        }
+    }
+
+    if (installedVersion && installedVersion !== forgeVersion) {
+        cleanOldForge(gameDir, mcVersion, installedVersion, onStatus);
+        try { fs.unlinkSync(markerPath); } catch (e) {}
+        installedVersion = null;
+    }
+
     const installerName = `forge-${mcVersion}-${forgeVersion}-installer.jar`;
     const installerPath = path.join(gameDir, installerName);
-    if (fs.existsSync(installerPath) && fs.statSync(installerPath).size > 0) {
+
+    // Installer déjà présent ET version à jour → réutilisation.
+    if (installedVersion === forgeVersion &&
+        fs.existsSync(installerPath) && fs.statSync(installerPath).size > 0) {
         return installerPath;
     }
+
     const url = `https://maven.minecraftforge.net/net/minecraftforge/forge/` +
                 `${mcVersion}-${forgeVersion}/forge-${mcVersion}-${forgeVersion}-installer.jar`;
     if (onStatus) onStatus("Téléchargement de Forge " + forgeVersion + "...");
@@ -518,6 +600,12 @@ async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
         file.on('error', (err) => { fs.unlink(installerPath, () => {}); reject(err); });
     });
     log.info('[MC] Installer Forge téléchargé : ' + installerName);
+
+    // Marque la version comme installée : minecraft-launcher-core va exécuter
+    // l'installer au lancement à partir de ce jar. Au prochain démarrage même
+    // version → réutilisation ; version différente → purge auto.
+    try { fs.writeFileSync(markerPath, forgeVersion); } catch (e) {}
+
     return installerPath;
 }
 
