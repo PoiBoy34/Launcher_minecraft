@@ -1,6 +1,6 @@
 {
   "name": "sus-launcher",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "SUS-Launcher — launcher custom multi-modpacks (Cobblemon, Time Rift Universe, ...)",
   "author": "PoiBoy34",
   "main": "src/index.js",
