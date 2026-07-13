@@ -9,7 +9,7 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const net = require('net');
-const { spawn } = require('child_process');
+const cp = require('child_process');
 const log = require('electron-log');
 const AdmZip = require('adm-zip');
 const tar = require('tar');
@@ -17,6 +17,42 @@ const { Client } = require('minecraft-launcher-core');
 const { Auth } = require('msmc');
 const { fetchCatalog, syncMods, syncDatapacks, syncShaderpacks, syncResourcepacks } = require('./modSync');
 const { fetchWithRedirect, dnsDiagnostic, safeLookup } = require('./netUtils');
+
+// --- HACK/PATCH : Corriger les bugs internes de minecraft-launcher-core ---
+const origSpawn = cp.spawn;
+let activeForgeVersionForPatch = null;
+
+cp.spawn = function(command, args, options) {
+    if (args && Array.isArray(args)) {
+        // 1. Corriger le bug du "version.json" de Forge 1.20.1 qui force 47.4.0
+        const fmlIdx = args.indexOf('--fml.forgeVersion');
+        if (fmlIdx !== -1 && activeForgeVersionForPatch) {
+            args[fmlIdx + 1] = activeForgeVersionForPatch;
+        }
+
+        // 2. Corriger le crash Java 17/21 (InaccessibleObjectException)
+        // On trouve où commence la classe principale pour insérer les arguments JVM juste avant
+        const mainClassIdx = args.findIndex(a => a && !a.startsWith('-') && (a.includes('.Main') || a.includes('ClientMain') || a === 'net.minecraft.client.main.Main'));
+
+        if (mainClassIdx !== -1 && !args.some(a => a.includes('java.lang.invoke=ALL-UNNAMED'))) {
+            const jvmArgs = [
+                '--add-modules', 'jdk.incubator.vector',
+                '--add-exports', 'java.base/sun.security.util=ALL-UNNAMED',
+                '--add-opens', 'java.base/java.util.jar=ALL-UNNAMED',
+                '--add-opens', 'java.base/java.lang.invoke=ALL-UNNAMED',
+                '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
+                '--add-opens', 'java.base/java.net=ALL-UNNAMED',
+                '--add-opens', 'java.base/java.nio=ALL-UNNAMED',
+                '--add-opens', 'java.base/java.util=ALL-UNNAMED',
+                '--add-opens', 'java.base/java.util.concurrent.atomic=ALL-UNNAMED'
+            ];
+            args.splice(mainClassIdx, 0, ...jvmArgs);
+        }
+    }
+    return origSpawn.call(this, command, args, options);
+};
+const spawn = cp.spawn; // Pour le test voicechat qui utilise spawn
+// ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
 // Logs : tout (launcher + sortie Minecraft) part dans un fichier rotatif.
@@ -146,10 +182,6 @@ ipcMain.handle('get-launcher-version', () => app.getVersion());
 
 // ---------------------------------------------------------------------------
 // Auth Microsoft — durcie.
-// Points corrigés vs v1 :
-//  - JSON corrompu sur disque → suppression du fichier au lieu de crasher en boucle
-//  - le refresh_token le plus récent est TOUJOURS resauvegardé
-//  - rafraîchissement automatique avant lancement si le token est trop vieux
 // ---------------------------------------------------------------------------
 function authFilePath() {
     return path.join(app.getPath('userData'), 'msmc-auth.json');
@@ -209,7 +241,6 @@ ipcMain.on('login-microsoft', async (event) => {
         event.sender.send('auth-success', { name: mcToken.profile.name });
     } catch (err) {
         log.error('[Login]', err.message);
-        // Message plus utile que le brut msmc pour les cas fréquents
         let message = err.message;
         if (/network|ENOTFOUND|ETIMEDOUT|EAI_AGAIN/i.test(message)) {
             message = 'Problème réseau pendant la connexion Microsoft. Vérifie ta connexion / ton DNS puis réessaie. (' + err.message + ')';
@@ -279,7 +310,6 @@ async function buildDiagnosticReport(packData) {
     lines.push('Connecté      : ' + (mcToken ? mcToken.profile.name : 'non'));
     lines.push('');
 
-    // Tests DNS : révèle immédiatement les joueurs au DNS routeur cassé
     lines.push('--- Tests DNS (système vs Cloudflare/Google) ---');
     const hostsToTest = [
         'raw.githubusercontent.com',
@@ -318,7 +348,7 @@ async function buildDiagnosticReport(packData) {
 ipcMain.handle('get-diagnostics', async (event, packData) => {
     try {
         const report = await buildDiagnosticReport(packData);
-        clipboard.writeText(report); // copie directe : le joueur n'a qu'à coller sur Discord
+        clipboard.writeText(report);
         return { success: true, report };
     } catch (err) {
         log.error('[Diag]', err);
@@ -348,11 +378,6 @@ ipcMain.on('open-logs-folder', () => {
 
 // ---------------------------------------------------------------------------
 // TEST VOICE CHAT
-// 1) DNS système vs DoH sur le voice host  → détecte le DNS cassé du joueur
-// 2) TCP vers le serveur Minecraft          → détecte un blocage réseau général
-// 3) Ping UDP SVC via le binaire officiel `svc` (henkelmax/svc-cli-utils)
-//    s'il est embarqué dans resources/bin/  → détecte le blocage UDP
-// NOTE : vérifie la syntaxe exacte avec `svc ping --help` et ajuste SVC_ARGS.
 // ---------------------------------------------------------------------------
 function tcpTest(host, port, timeoutMs = 6000) {
     return new Promise((resolve) => {
@@ -376,7 +401,6 @@ function findSvcBinary() {
 
 function svcPing(binPath, host, port) {
     return new Promise((resolve) => {
-        // Syntaxe à valider avec `svc ping --help` — ajuste ici si besoin.
         const SVC_ARGS = ['ping', host, '-p', String(port)];
         let output = '';
         let child;
@@ -407,7 +431,6 @@ ipcMain.handle('test-voicechat', async (event, packData) => {
     const result = { voiceTarget, steps: [] };
     log.info('[VoiceTest] Démarrage pour', voiceTarget);
 
-    // 1) DNS
     const d = await dnsDiagnostic(voiceHost);
     if (d.system) {
         result.steps.push({ id: 'dns', ok: true, detail: 'DNS OK → ' + d.system });
@@ -425,7 +448,6 @@ ipcMain.handle('test-voicechat', async (event, packData) => {
         });
     }
 
-    // 2) TCP Minecraft (chemin réseau général)
     const tcp = await tcpTest(mcHost, mcPort);
     result.steps.push({
         id: 'tcp', ok: tcp.ok,
@@ -433,7 +455,6 @@ ipcMain.handle('test-voicechat', async (event, packData) => {
         : ('Serveur Minecraft injoignable en TCP : ' + tcp.error)
     });
 
-    // 3) Ping UDP voice chat via binaire svc si présent
     const bin = findSvcBinary();
     if (bin) {
         const ping = await svcPing(bin, voiceHost, voicePort);
@@ -497,22 +518,10 @@ async function setupFabric(gameDir, mcVersion, loaderVersion) {
     return customName;
 }
 
-// Purge les profils/libs d'une ANCIENNE version de Forge quand la version
-// demandée change. Sans ça, une instance déjà installée en 47.4.0 reste
-// coincée dessus même après un bump du catalog → crash "requires forge X".
-// On ne touche QUE ce qui concerne Forge : mods/, config/, saves/, options.txt
-// sont préservés.
 function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
     if (onStatus) onStatus("Nettoyage de l'ancienne version de Forge (" + oldForgeVersion + ")...");
     log.info('[MC] Purge Forge ' + oldForgeVersion + ' avant réinstallation');
 
-    // 1. Profils de version dans versions/.
-    //    PIÈGE : avec ForgeWrapper, le profil Forge ne s'appelle PAS "forge-x"
-    //    mais porte le nom de la version Minecraft (ex. dossier "1.20.1" contenant
-    //    1.20.1.json dont les arguments codent en dur --fml.forgeVersion 47.4.0).
-    //    Filtrer sur "forge" laisse donc l'ancien profil en place → le jeu relance
-    //    l'ancienne version. On purge donc TOUT versions/ : minecraft-launcher-core
-    //    régénère le profil (client vanilla + Forge) au prochain lancement.
     const versionsDir = path.join(gameDir, 'versions');
     if (fs.existsSync(versionsDir)) {
         try {
@@ -521,8 +530,6 @@ function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
         } catch (e) { log.error('[MC] Purge versions/ : ' + e.message); }
     }
 
-    // 2. Libs Forge (net/minecraftforge). On ne vire QUE ce dossier : les autres
-    //    libs seront revalidées/retéléchargées par le launcher au besoin.
     const forgeLibs = path.join(gameDir, 'libraries', 'net', 'minecraftforge');
     if (fs.existsSync(forgeLibs)) {
         try {
@@ -531,7 +538,6 @@ function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
         } catch (e) { log.error('[MC] Purge libs Forge : ' + e.message); }
     }
 
-    // 3. Cache MCLC (le coupable silencieux)
     const cacheDir = path.join(gameDir, 'cache');
     if (fs.existsSync(cacheDir)) {
         try {
@@ -540,7 +546,6 @@ function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
         } catch (e) { log.error('[MC] Purge cache/ : ' + e.message); }
     }
 
-    // 4. Anciens installers Forge qui traînent à la racine de l'instance
     try {
         for (const f of fs.readdirSync(gameDir)) {
             if (/^forge-.*-installer\.jar$/.test(f)) {
@@ -553,12 +558,6 @@ function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
 async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
     fs.mkdirSync(gameDir, { recursive: true });
 
-    // --- Détection FIABLE de la version réellement installée --------------
-    // On NE se fie PAS au marqueur seul : il peut mentir (dire "47.4.20" alors
-    // que les libs FML sur le disque sont en 47.4.0, ce qui fait relancer
-    // l'ancienne version via ForgeWrapper). La source de vérité, c'est le
-    // dossier des libs FML : libraries/net/minecraftforge/fmlloader/<mcVer>-<forgeVer>/
-    // Si la version demandée n'y est PAS présente, l'install est périmée → purge.
     const fmlLoaderDir = path.join(gameDir, 'libraries', 'net', 'minecraftforge', 'fmlloader');
     const expectedFmlDir = path.join(fmlLoaderDir, `${mcVersion}-${forgeVersion}`);
     let correctFmlPresent = false;
@@ -567,12 +566,10 @@ async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
         fs.readdirSync(expectedFmlDir).some(f => f.endsWith('.jar'));
     } catch (e) {}
 
-    // Y a-t-il une install Forge quelconque (bonne ou périmée) ?
     let anyForgeInstalled = false;
     try {
         anyForgeInstalled = fs.existsSync(fmlLoaderDir) && fs.readdirSync(fmlLoaderDir).length > 0;
     } catch (e) {}
-    // Ou un profil dans versions/ (cas de l'ancien launcher)
     if (!anyForgeInstalled) {
         const versionsDir = path.join(gameDir, 'versions');
         try {
@@ -582,8 +579,6 @@ async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
 
     const markerPath = path.join(gameDir, '.forge_version');
 
-    // Purge si : une install existe MAIS ce n'est pas la bonne version FML.
-    // Couvre d'un coup le bump de version ET les instances de l'ancien launcher.
     if (anyForgeInstalled && !correctFmlPresent) {
         cleanOldForge(gameDir, mcVersion, 'périmée', onStatus);
         try { fs.unlinkSync(markerPath); } catch (e) {}
@@ -592,8 +587,6 @@ async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
     const installerName = `forge-${mcVersion}-${forgeVersion}-installer.jar`;
     const installerPath = path.join(gameDir, installerName);
 
-    // Bonnes libs FML déjà présentes ET installer présent → rien à faire,
-    // réutilisation directe (démarrage rapide).
     if (correctFmlPresent &&
         fs.existsSync(installerPath) && fs.statSync(installerPath).size > 0) {
         return installerPath;
@@ -614,9 +607,6 @@ async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
     });
     log.info('[MC] Installer Forge téléchargé : ' + installerName);
 
-    // Marque la version comme installée : minecraft-launcher-core va exécuter
-    // l'installer au lancement à partir de ce jar. Au prochain démarrage même
-    // version → réutilisation ; version différente → purge auto.
     try { fs.writeFileSync(markerPath, forgeVersion); } catch (e) {}
 
     return installerPath;
@@ -695,7 +685,7 @@ function activateResourcepacks(gameDir, resourcepacksDir, loader) {
 }
 
 // ---------------------------------------------------------------------------
-// Java 21 portable (Temurin), commun à tous les packs
+// Java 17/21 portable (Temurin), dynamique selon la version MC
 // ---------------------------------------------------------------------------
 function findJavaBinary(dir) {
     const exe = process.platform === 'win32' ? 'javaw.exe' : 'java';
@@ -724,8 +714,11 @@ async function downloadToFile(url, destPath) {
     });
 }
 
-async function setupJava(onStatus) {
-    const javaRoot = path.join(app.getPath('userData'), 'java', 'jre21');
+async function setupJava(mcVersion, onStatus) {
+    const majorVersion = parseInt(mcVersion.split('.')[1]);
+    const javaMajor = majorVersion >= 20 && majorVersion < 21 ? '17' : '21';
+
+    const javaRoot = path.join(app.getPath('userData'), 'java', `jre${javaMajor}`);
     const existing = findJavaBinary(javaRoot);
     if (existing && fs.existsSync(existing)) return existing;
 
@@ -733,15 +726,15 @@ async function setupJava(onStatus) {
     : process.platform === 'darwin' ? 'mac' : 'linux';
     const arch = process.arch === 'arm64' ? 'aarch64' : 'x64';
     const ext = platform === 'windows' ? 'zip' : 'tar.gz';
-    const url = `https://api.adoptium.net/v3/binary/latest/21/ga/${platform}/${arch}/jre/hotspot/normal/eclipse`;
+    const url = `https://api.adoptium.net/v3/binary/latest/${javaMajor}/ga/${platform}/${arch}/jre/hotspot/normal/eclipse`;
 
     fs.mkdirSync(javaRoot, { recursive: true });
-    const archivePath = path.join(javaRoot, 'jre21.' + ext);
+    const archivePath = path.join(javaRoot, `jre${javaMajor}.${ext}`);
 
-    if (onStatus) onStatus("Téléchargement de Java 21 (une seule fois)...");
+    if (onStatus) onStatus(`Téléchargement de Java ${javaMajor} (une seule fois)...`);
     await downloadToFile(url, archivePath);
 
-    if (onStatus) onStatus("Installation de Java 21...");
+    if (onStatus) onStatus(`Installation de Java ${javaMajor}...`);
     if (ext === 'zip') {
         const zip = new AdmZip(archivePath);
         zip.extractAllTo(javaRoot, true);
@@ -755,7 +748,7 @@ async function setupJava(onStatus) {
     if (process.platform !== 'win32') {
         try { fs.chmodSync(bin, 0o755); } catch (e) {}
     }
-    log.info('[MC] Java 21 prêt : ' + bin);
+    log.info(`[MC] Java ${javaMajor} prêt : ${bin}`);
     return bin;
 }
 
@@ -839,9 +832,6 @@ ipcMain.on('launch-game', async (event, packData) => {
     lastSelectedPackName = packData.name || packData.id || '';
 
     try {
-        // Token trop vieux (launcher resté ouvert) → refresh silencieux avant
-        // lancement, sinon Minecraft démarre avec un token expiré et le
-        // multijoueur refuse la connexion.
         if (Date.now() - mcTokenTimestamp > TOKEN_MAX_AGE_MS) {
             event.sender.send('sync-status', { message: "Rafraîchissement de la session Microsoft..." });
             try {
@@ -888,7 +878,7 @@ ipcMain.on('launch-game', async (event, packData) => {
 
         let javaPath = null;
         try {
-            javaPath = await setupJava((msg) => event.sender.send('sync-status', { message: msg }));
+            javaPath = await setupJava(packData.minecraft, (msg) => event.sender.send('sync-status', { message: msg }));
         } catch (err) {
             log.error('[MC] Java auto indisponible :', err.message);
             event.sender.send('sync-status', { message: "Java auto indisponible, utilisation du Java système..." });
@@ -897,6 +887,10 @@ ipcMain.on('launch-game', async (event, packData) => {
         let opts;
         if (loader === 'forge') {
             const forgeVersion = packData.loader_version || "47.4.10";
+
+            // On arme notre patch avec la VRAIE version Forge voulue pour qu'il écrase le faux 47.4.0
+            activeForgeVersionForPatch = forgeVersion;
+
             event.sender.send('sync-status', { message: "Installation de Forge " + forgeVersion + "..." });
             const forgeInstaller = await setupForge(
                 gameDir, packData.minecraft, forgeVersion,
@@ -910,6 +904,7 @@ ipcMain.on('launch-game', async (event, packData) => {
                memory: { max: ram + "G", min: "2G" }
             };
         } else {
+            activeForgeVersionForPatch = null;
             const loaderVersion = packData.loader_version || "0.18.4";
             event.sender.send('sync-status', { message: "Installation de Fabric..." });
             const fabricVersion = await setupFabric(gameDir, packData.minecraft, loaderVersion);
@@ -924,7 +919,6 @@ ipcMain.on('launch-game', async (event, packData) => {
 
         event.sender.send('sync-status', { message: "Démarrage de Minecraft..." });
         await launcher.launch(opts);
-        // isLaunching repasse à false via l'event 'close' ou 'error' du launcher
     } catch (err) {
         log.error('[Launch]', err);
         isLaunching = false;
