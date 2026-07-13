@@ -546,6 +546,20 @@ function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
         } catch (e) { log.error('[MC] Purge cache/ : ' + e.message); }
     }
 
+    // LE FIX PRINCIPAL : MCLC/ForgeWrapper génère un version.json dans
+    // <gameDir>/forge/<mcVersion>/version.json, indexé par la version
+    // MINECRAFT uniquement (pas par la version Forge !). Sans cette purge,
+    // un changement de loader_version dans le catalog continue de lancer
+    // l'ANCIEN Forge (c'était la vraie origine du "--fml.forgeVersion 47.4.0
+    // forcé" que le monkey-patch de cp.spawn essayait de contourner).
+    const forgeJsonCacheDir = path.join(gameDir, 'forge');
+    if (fs.existsSync(forgeJsonCacheDir)) {
+        try {
+            fs.rmSync(forgeJsonCacheDir, { recursive: true, force: true });
+            log.info('[MC] Supprimé forge/ (version.json ForgeWrapper mis en cache par MCLC)');
+        } catch (e) { log.error('[MC] Purge forge/ : ' + e.message); }
+    }
+
     try {
         for (const f of fs.readdirSync(gameDir)) {
             if (/^forge-.*-installer\.jar$/.test(f)) {
@@ -579,9 +593,27 @@ async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
 
     const markerPath = path.join(gameDir, '.forge_version');
 
-    if (anyForgeInstalled && !correctFmlPresent) {
+    // Détection du cache MCLC périmé. Attention : vérifier seulement la
+    // présence de libraries/.../fmlloader/<mc>-<forge attendu>/ ne suffit pas,
+    // car après un lancement raté en "version mixte", l'installer (lancé par
+    // ForgeWrapper) a déjà créé ce dossier alors que forge/<mc>/version.json
+    // pointe toujours vers l'ancienne version → l'instance reste cassée pour
+    // toujours. On vérifie donc le CONTENU du cache.
+    let mclcCacheStale = false;
+    const mclcForgeJson = path.join(gameDir, 'forge', mcVersion, 'version.json');
+    if (fs.existsSync(mclcForgeJson)) {
+        try {
+            const cached = JSON.parse(fs.readFileSync(mclcForgeJson, 'utf8'));
+            const gameArgs = (cached.arguments && cached.arguments.game) || [];
+            const idx = gameArgs.indexOf('--fml.forgeVersion');
+            mclcCacheStale = (idx === -1) || (gameArgs[idx + 1] !== forgeVersion);
+        } catch (e) { mclcCacheStale = true; }
+    }
+
+    if (mclcCacheStale || (anyForgeInstalled && !correctFmlPresent)) {
         cleanOldForge(gameDir, mcVersion, 'périmée', onStatus);
         try { fs.unlinkSync(markerPath); } catch (e) {}
+        correctFmlPresent = false; // tout vient d'être purgé : réinstallation obligatoire
     }
 
     const installerName = `forge-${mcVersion}-${forgeVersion}-installer.jar`;
