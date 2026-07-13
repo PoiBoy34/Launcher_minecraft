@@ -506,19 +506,19 @@ function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
     if (onStatus) onStatus("Nettoyage de l'ancienne version de Forge (" + oldForgeVersion + ")...");
     log.info('[MC] Purge Forge ' + oldForgeVersion + ' avant réinstallation');
 
-    // 1. Profils de version Forge dans versions/ (nom variable selon la génération
-    //    par minecraft-launcher-core : "1.20.1-forge-47.4.0", "forge-47.4.0", etc.)
+    // 1. Profils de version dans versions/.
+    //    PIÈGE : avec ForgeWrapper, le profil Forge ne s'appelle PAS "forge-x"
+    //    mais porte le nom de la version Minecraft (ex. dossier "1.20.1" contenant
+    //    1.20.1.json dont les arguments codent en dur --fml.forgeVersion 47.4.0).
+    //    Filtrer sur "forge" laisse donc l'ancien profil en place → le jeu relance
+    //    l'ancienne version. On purge donc TOUT versions/ : minecraft-launcher-core
+    //    régénère le profil (client vanilla + Forge) au prochain lancement.
     const versionsDir = path.join(gameDir, 'versions');
     if (fs.existsSync(versionsDir)) {
-        for (const entry of fs.readdirSync(versionsDir)) {
-            const lower = entry.toLowerCase();
-            if (lower.includes('forge')) {
-                try {
-                    fs.rmSync(path.join(versionsDir, entry), { recursive: true, force: true });
-                    log.info('[MC] Supprimé versions/' + entry);
-                } catch (e) { log.error('[MC] Purge versions/' + entry + ' : ' + e.message); }
-            }
-        }
+        try {
+            fs.rmSync(versionsDir, { recursive: true, force: true });
+            log.info('[MC] Supprimé versions/ (profils régénérés au prochain lancement)');
+        } catch (e) { log.error('[MC] Purge versions/ : ' + e.message); }
     }
 
     // 2. Libs Forge (net/minecraftforge). On ne vire QUE ce dossier : les autres
@@ -544,44 +544,48 @@ function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
 async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
     fs.mkdirSync(gameDir, { recursive: true });
 
-    // --- Détection de changement de version -------------------------------
-    // Marqueur écrit après une install réussie. S'il ne correspond pas à la
-    // version demandée, on purge l'ancienne install AVANT de réinstaller.
-    const markerPath = path.join(gameDir, '.forge_version');
-    let installedVersion = null;
+    // --- Détection FIABLE de la version réellement installée --------------
+    // On NE se fie PAS au marqueur seul : il peut mentir (dire "47.4.20" alors
+    // que les libs FML sur le disque sont en 47.4.0, ce qui fait relancer
+    // l'ancienne version via ForgeWrapper). La source de vérité, c'est le
+    // dossier des libs FML : libraries/net/minecraftforge/fmlloader/<mcVer>-<forgeVer>/
+    // Si la version demandée n'y est PAS présente, l'install est périmée → purge.
+    const fmlLoaderDir = path.join(gameDir, 'libraries', 'net', 'minecraftforge', 'fmlloader');
+    const expectedFmlDir = path.join(fmlLoaderDir, `${mcVersion}-${forgeVersion}`);
+    let correctFmlPresent = false;
     try {
-        if (fs.existsSync(markerPath)) installedVersion = fs.readFileSync(markerPath, 'utf8').trim();
+        correctFmlPresent = fs.existsSync(expectedFmlDir) &&
+            fs.readdirSync(expectedFmlDir).some(f => f.endsWith('.jar'));
     } catch (e) {}
 
-    // --- Rattrapage des instances de l'ANCIEN launcher --------------------
-    // Si un profil Forge existe déjà dans versions/ mais qu'il n'y a AUCUN
-    // marqueur, l'instance a été installée par une version du launcher qui ne
-    // gérait pas les bumps de version → on ne connaît pas sa version Forge et
-    // elle peut être périmée/corrompue. Par sécurité on la purge une fois pour
-    // repartir propre. Ne s'exécute qu'une seule fois (ensuite le marqueur existe).
-    if (!installedVersion) {
+    // Y a-t-il une install Forge quelconque (bonne ou périmée) ?
+    let anyForgeInstalled = false;
+    try {
+        anyForgeInstalled = fs.existsSync(fmlLoaderDir) && fs.readdirSync(fmlLoaderDir).length > 0;
+    } catch (e) {}
+    // Ou un profil dans versions/ (cas de l'ancien launcher)
+    if (!anyForgeInstalled) {
         const versionsDir = path.join(gameDir, 'versions');
-        let hasOrphanForge = false;
         try {
-            hasOrphanForge = fs.existsSync(versionsDir) &&
-                fs.readdirSync(versionsDir).some(e => e.toLowerCase().includes('forge'));
+            anyForgeInstalled = fs.existsSync(versionsDir) && fs.readdirSync(versionsDir).length > 0;
         } catch (e) {}
-        if (hasOrphanForge) {
-            cleanOldForge(gameDir, mcVersion, 'inconnue', onStatus);
-        }
     }
 
-    if (installedVersion && installedVersion !== forgeVersion) {
-        cleanOldForge(gameDir, mcVersion, installedVersion, onStatus);
+    const markerPath = path.join(gameDir, '.forge_version');
+
+    // Purge si : une install existe MAIS ce n'est pas la bonne version FML.
+    // Couvre d'un coup le bump de version ET les instances de l'ancien launcher.
+    if (anyForgeInstalled && !correctFmlPresent) {
+        cleanOldForge(gameDir, mcVersion, 'périmée', onStatus);
         try { fs.unlinkSync(markerPath); } catch (e) {}
-        installedVersion = null;
     }
 
     const installerName = `forge-${mcVersion}-${forgeVersion}-installer.jar`;
     const installerPath = path.join(gameDir, installerName);
 
-    // Installer déjà présent ET version à jour → réutilisation.
-    if (installedVersion === forgeVersion &&
+    // Bonnes libs FML déjà présentes ET installer présent → rien à faire,
+    // réutilisation directe (démarrage rapide).
+    if (correctFmlPresent &&
         fs.existsSync(installerPath) && fs.statSync(installerPath).size > 0) {
         return installerPath;
     }
