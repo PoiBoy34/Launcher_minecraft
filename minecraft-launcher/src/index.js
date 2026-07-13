@@ -105,8 +105,8 @@ function createWindow() {
         width: 960, height: 620,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            contextIsolation: true,
-            nodeIntegration: false
+                                  contextIsolation: true,
+                                  nodeIntegration: false
         }
     });
     win.loadFile(path.join(__dirname, 'index.html'));
@@ -225,11 +225,11 @@ ipcMain.on('open-folder', (event, type, packId) => {
     const baseDir = path.join(app.getPath('userData'), 'instances', packId);
     const dirs = {
         mods:          path.join(baseDir, 'mods'),
-        datapacks:     path.join(baseDir, 'datapacks'),
-        shaderpacks:   path.join(baseDir, 'shaderpacks'),
-        resourcepacks: path.join(baseDir, 'resourcepacks'),
-        screenshots:   path.join(baseDir, 'screenshots'),
-        game:          baseDir
+           datapacks:     path.join(baseDir, 'datapacks'),
+           shaderpacks:   path.join(baseDir, 'shaderpacks'),
+           resourcepacks: path.join(baseDir, 'resourcepacks'),
+           screenshots:   path.join(baseDir, 'screenshots'),
+           game:          baseDir
     };
     const target = dirs[type] || dirs.game;
     if (!fs.existsSync(target)) fs.mkdirSync(target, { recursive: true });
@@ -290,7 +290,7 @@ async function buildDiagnosticReport(packData) {
         try {
             const d = await dnsDiagnostic(h);
             lines.push(h + ' → système: ' + (d.system || ('ÉCHEC ' + d.systemError)) +
-                       ' | DoH: ' + (d.doh || ('ÉCHEC ' + d.dohError)));
+            ' | DoH: ' + (d.doh || ('ÉCHEC ' + d.dohError)));
         } catch (e) {
             lines.push(h + ' → erreur test : ' + e.message);
         }
@@ -332,7 +332,7 @@ ipcMain.handle('save-diagnostics', async (event, packData) => {
         const { filePath } = await dialog.showSaveDialog(currentWindow, {
             title: 'Enregistrer le rapport',
             defaultPath: path.join(app.getPath('desktop'), 'sus-launcher-rapport.txt'),
-            filters: [{ name: 'Texte', extensions: ['txt'] }]
+                filters: [{ name: 'Texte', extensions: ['txt'] }]
         });
         if (!filePath) return { success: false, error: 'annulé' };
         fs.writeFileSync(filePath, report);
@@ -415,8 +415,8 @@ ipcMain.handle('test-voicechat', async (event, packData) => {
         result.steps.push({
             id: 'dns', ok: false, warn: true,
             detail: 'TON DNS EST CASSÉ : le système ne résout pas ' + voiceHost +
-                    ' (' + d.systemError + ') mais Cloudflare/Google y arrivent (' + d.doh + '). ' +
-                    'Configure 1.1.1.1 et 8.8.8.8 dans tes paramètres réseau Windows.'
+            ' (' + d.systemError + ') mais Cloudflare/Google y arrivent (' + d.doh + '). ' +
+            'Configure 1.1.1.1 et 8.8.8.8 dans tes paramètres réseau Windows.'
         });
     } else {
         result.steps.push({
@@ -430,7 +430,7 @@ ipcMain.handle('test-voicechat', async (event, packData) => {
     result.steps.push({
         id: 'tcp', ok: tcp.ok,
         detail: tcp.ok ? ('Serveur Minecraft joignable (' + tcp.ms + ' ms)')
-                       : ('Serveur Minecraft injoignable en TCP : ' + tcp.error)
+        : ('Serveur Minecraft injoignable en TCP : ' + tcp.error)
     });
 
     // 3) Ping UDP voice chat via binaire svc si présent
@@ -440,8 +440,8 @@ ipcMain.handle('test-voicechat', async (event, packData) => {
         result.steps.push({
             id: 'udp', ok: ping.ok,
             detail: ping.ok ? ('Voice chat UDP OK — ' + ping.output)
-                            : ('Voice chat UDP en échec — ' + (ping.output || 'aucune réponse') +
-                               '. Si le DNS et le TCP sont OK, ton réseau (pare-feu, école, 4G, VPN) bloque probablement l\'UDP.')
+            : ('Voice chat UDP en échec — ' + (ping.output || 'aucune réponse') +
+            '. Si le DNS et le TCP sont OK, ton réseau (pare-feu, école, 4G, VPN) bloque probablement l\'UDP.')
         });
     } else {
         result.steps.push({
@@ -531,7 +531,16 @@ function cleanOldForge(gameDir, mcVersion, oldForgeVersion, onStatus) {
         } catch (e) { log.error('[MC] Purge libs Forge : ' + e.message); }
     }
 
-    // 3. Anciens installers Forge qui traînent à la racine de l'instance
+    // 3. Cache MCLC (le coupable silencieux)
+    const cacheDir = path.join(gameDir, 'cache');
+    if (fs.existsSync(cacheDir)) {
+        try {
+            fs.rmSync(cacheDir, { recursive: true, force: true });
+            log.info('[MC] Supprimé cache/ (cache MCLC)');
+        } catch (e) { log.error('[MC] Purge cache/ : ' + e.message); }
+    }
+
+    // 4. Anciens installers Forge qui traînent à la racine de l'instance
     try {
         for (const f of fs.readdirSync(gameDir)) {
             if (/^forge-.*-installer\.jar$/.test(f)) {
@@ -555,7 +564,7 @@ async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
     let correctFmlPresent = false;
     try {
         correctFmlPresent = fs.existsSync(expectedFmlDir) &&
-            fs.readdirSync(expectedFmlDir).some(f => f.endsWith('.jar'));
+        fs.readdirSync(expectedFmlDir).some(f => f.endsWith('.jar'));
     } catch (e) {}
 
     // Y a-t-il une install Forge quelconque (bonne ou périmée) ?
@@ -588,10 +597,10 @@ async function setupForge(gameDir, mcVersion, forgeVersion, onStatus) {
     if (correctFmlPresent &&
         fs.existsSync(installerPath) && fs.statSync(installerPath).size > 0) {
         return installerPath;
-    }
+        }
 
-    const url = `https://maven.minecraftforge.net/net/minecraftforge/forge/` +
-                `${mcVersion}-${forgeVersion}/forge-${mcVersion}-${forgeVersion}-installer.jar`;
+        const url = `https://maven.minecraftforge.net/net/minecraftforge/forge/` +
+        `${mcVersion}-${forgeVersion}/forge-${mcVersion}-${forgeVersion}-installer.jar`;
     if (onStatus) onStatus("Téléchargement de Forge " + forgeVersion + "...");
     const res = await fetchWithRedirect(url);
     if (res.statusCode !== 200) {
@@ -721,7 +730,7 @@ async function setupJava(onStatus) {
     if (existing && fs.existsSync(existing)) return existing;
 
     const platform = process.platform === 'win32' ? 'windows'
-                   : process.platform === 'darwin' ? 'mac' : 'linux';
+    : process.platform === 'darwin' ? 'mac' : 'linux';
     const arch = process.arch === 'arm64' ? 'aarch64' : 'x64';
     const ext = platform === 'windows' ? 'zip' : 'tar.gz';
     const url = `https://api.adoptium.net/v3/binary/latest/21/ga/${platform}/${arch}/jre/hotspot/normal/eclipse`;
@@ -784,8 +793,8 @@ async function syncAllContent(event, packData, gameDir) {
         const baseName = part00.replace('.part00', '');
         const finalPath = path.join(modsDir, baseName);
         const partPaths = allFiles
-            .filter(f => f.startsWith(baseName + '.part'))
-            .map(f => path.join(modsDir, f));
+        .filter(f => f.startsWith(baseName + '.part'))
+        .map(f => path.join(modsDir, f));
         const totalPartsSize = partPaths.reduce((sum, p) => sum + fs.statSync(p).size, 0);
         if (!fs.existsSync(finalPath) || fs.statSync(finalPath).size !== totalPartsSize) {
             statusCb('Assemblage : ' + baseName + '...');
@@ -860,7 +869,7 @@ ipcMain.on('launch-game', async (event, packData) => {
         let modsPresent = false;
         try {
             modsPresent = fs.existsSync(modsDir) &&
-                fs.readdirSync(modsDir).some(f => f.endsWith('.jar') || f.endsWith('.part00'));
+            fs.readdirSync(modsDir).some(f => f.endsWith('.jar') || f.endsWith('.part00'));
         } catch (e) {}
 
         const doSync = autoSync || !modsPresent;
@@ -895,10 +904,10 @@ ipcMain.on('launch-game', async (event, packData) => {
             );
             opts = {
                 authorization: mcToken.mclc(),
-                root: gameDir,
-                version: { number: packData.minecraft, type: "release" },
-                forge: forgeInstaller,
-                memory: { max: ram + "G", min: "2G" }
+           root: gameDir,
+           version: { number: packData.minecraft, type: "release" },
+           forge: forgeInstaller,
+               memory: { max: ram + "G", min: "2G" }
             };
         } else {
             const loaderVersion = packData.loader_version || "0.18.4";
@@ -906,9 +915,9 @@ ipcMain.on('launch-game', async (event, packData) => {
             const fabricVersion = await setupFabric(gameDir, packData.minecraft, loaderVersion);
             opts = {
                 authorization: mcToken.mclc(),
-                root: gameDir,
-                version: { number: packData.minecraft, type: "release", custom: fabricVersion },
-                memory: { max: ram + "G", min: "2G" }
+           root: gameDir,
+           version: { number: packData.minecraft, type: "release", custom: fabricVersion },
+           memory: { max: ram + "G", min: "2G" }
             };
         }
         if (javaPath) opts.javaPath = javaPath;
