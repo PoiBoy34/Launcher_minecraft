@@ -186,6 +186,23 @@
       </div>
 
       <div class="settings-section">
+        <div class="settings-label" data-i18n="supportLabel">Support &amp; Diagnostic</div>
+        <button class="folder-btn" id="btn-test-voice">
+          <span class="folder-icon">🎙️</span><span class="lbl" data-i18n="testVoice">Tester le voice chat</span>
+        </button>
+        <button class="folder-btn" id="btn-copy-logs">
+          <span class="folder-icon">📋</span><span class="lbl" data-i18n="copyLogs">Copier le rapport de logs</span>
+        </button>
+        <button class="folder-btn" id="btn-save-logs">
+          <span class="folder-icon">💾</span><span class="lbl" data-i18n="saveLogs">Exporter le rapport (.txt)</span>
+        </button>
+        <button class="folder-btn" id="btn-open-logs">
+          <span class="folder-icon">📂</span><span class="lbl" data-i18n="openLogs">Ouvrir le dossier des logs</span>
+        </button>
+        <pre id="diag-output" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.1); border-radius:8px; font-size:11px; color:#cbd5e1; white-space:pre-wrap; word-break:break-word; max-height:180px; overflow-y:auto;"></pre>
+      </div>
+
+      <div class="settings-section">
         <div class="settings-label" data-i18n="launcherLabel">Launcher</div>
         <button class="folder-btn update-check" id="btn-check-update">
           <span class="folder-icon">🔄</span><span class="lbl" data-i18n="checkUpdate">Vérifier les mises à jour</span>
@@ -278,6 +295,15 @@
       resetDefaults: 'Réinitialiser keybinds & minimap',
       launcherLabel: 'Launcher',
       checkUpdate: 'Vérifier les mises à jour',
+      supportLabel: 'Support & Diagnostic',
+      testVoice: 'Tester le voice chat',
+      copyLogs: 'Copier le rapport de logs',
+      saveLogs: 'Exporter le rapport (.txt)',
+      openLogs: 'Ouvrir le dossier des logs',
+      diagRunning: 'Test en cours...',
+      diagCopied: 'Rapport copié ! Colle-le sur Discord (Ctrl+V).',
+      diagSaved: (p) => 'Rapport enregistré : ' + p,
+      diagError: (m) => 'Erreur : ' + m,
       bannerDownload: 'Télécharger',
       bannerDownloading: 'Téléchargement...',
       bannerInstall: 'Installer & redémarrer',
@@ -326,6 +352,15 @@
       resetDefaults: 'Reset keybinds & minimap',
       launcherLabel: 'Launcher',
       checkUpdate: 'Check for updates',
+      supportLabel: 'Support & Diagnostics',
+      testVoice: 'Test voice chat',
+      copyLogs: 'Copy log report',
+      saveLogs: 'Export report (.txt)',
+      openLogs: 'Open logs folder',
+      diagRunning: 'Running test...',
+      diagCopied: 'Report copied! Paste it on Discord (Ctrl+V).',
+      diagSaved: (p) => 'Report saved: ' + p,
+      diagError: (m) => 'Error: ' + m,
       bannerDownload: 'Download',
       bannerDownloading: 'Downloading...',
       bannerInstall: 'Install & restart',
@@ -478,6 +513,56 @@
   window.api.onDefaultsReset(() => {
     document.getElementById('update-status').textContent = L().defaultsReset;
     document.getElementById('update-status').style.color = '#4ade80';
+  });
+
+  // ===========================================================================
+  // Support & Diagnostic
+  // ===========================================================================
+  const diagOutput = document.getElementById('diag-output');
+  function showDiag(text, color) {
+    diagOutput.style.display = 'block';
+    diagOutput.style.color = color || '#cbd5e1';
+    diagOutput.textContent = text;
+  }
+
+  document.getElementById('btn-copy-logs').addEventListener('click', async () => {
+    const b = document.getElementById('btn-copy-logs');
+    b.disabled = true;
+    showDiag(L().diagRunning);
+    // Le rapport est copié dans le presse-papier côté main ; on affiche un aperçu.
+    const res = await window.api.getDiagnostics(selectedPack ? { ...selectedPack } : null);
+    b.disabled = false;
+    if (res.success) {
+      showDiag(L().diagCopied + '\n\n' + res.report.split('\n').slice(0, 12).join('\n') + '\n[...]', '#4ade80');
+    } else {
+      showDiag(L().diagError(res.error), '#ef4444');
+    }
+  });
+
+  document.getElementById('btn-save-logs').addEventListener('click', async () => {
+    const res = await window.api.saveDiagnostics(selectedPack ? { ...selectedPack } : null);
+    if (res.success) showDiag(L().diagSaved(res.path), '#4ade80');
+    else if (res.error !== 'annulé') showDiag(L().diagError(res.error), '#ef4444');
+  });
+
+  document.getElementById('btn-open-logs').addEventListener('click', () => {
+    window.api.openLogsFolder();
+  });
+
+  document.getElementById('btn-test-voice').addEventListener('click', async () => {
+    const b = document.getElementById('btn-test-voice');
+    b.disabled = true;
+    showDiag(L().diagRunning);
+    const res = await window.api.testVoiceChat(selectedPack ? { ...selectedPack } : null);
+    b.disabled = false;
+    const lines = ['Cible voice chat : ' + res.voiceTarget, ''];
+    let allOk = true;
+    for (const step of res.steps) {
+      const icon = step.ok === true ? '✅' : step.ok === false ? '❌' : 'ℹ️';
+      if (step.ok === false) allOk = false;
+      lines.push(icon + ' ' + step.detail);
+    }
+    showDiag(lines.join('\n'), allOk ? '#4ade80' : '#fbbf24');
   });
 
   // Version du launcher
