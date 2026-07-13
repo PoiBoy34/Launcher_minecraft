@@ -20,6 +20,12 @@
     }
     ,
     {
+      "name": "addonslib-forge-1.20.1-1.11.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/addonslib-forge-1.20.1-1.11.jar",
+      "sha1": "7477a3b4f63dbcfe596b0cd017ceec44cefc93be"
+    }
+    ,
+    {
       "name": "alexsmobs-1.22.9.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/alexsmobs-1.22.9.jar",
       "sha1": "dbf93d2f1da19e16739e91e8ea0fc6f4bc2f228f"
@@ -32,6 +38,12 @@
     }
     ,
     {
+      "name": "another_furniture-forge-1.20.1-3.0.4.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/another_furniture-forge-1.20.1-3.0.4.jar",
+      "sha1": "bffc5f4d6ae0a906222990c9d0fa8a632b2aa8ed"
+    }
+    ,
+    {
       "name": "appleskin-forge-mc1.20.1-2.5.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/appleskin-forge-mc1.20.1-2.5.1.jar",
       "sha1": "81919356f84eab14258db98924b66c3c38e372b1"
@@ -41,6 +53,12 @@
       "name": "architectury-9.2.14-forge.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/architectury-9.2.14-forge.jar",
       "sha1": "a52918a500ff421180a1cbd1a0cabee712134ec4"
+    }
+    ,
+    {
+      "name": "armourersworkshop-forge-1.20.1-3.4.0-beta.2.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/armourersworkshop-forge-1.20.1-3.4.0-beta.2.jar",
+      "sha1": "52a0a8b4471e48e8ed89d8d6ef1d00fb9ddd6887"
     }
     ,
     {
@@ -692,6 +710,24 @@
     }
     ,
     {
+      "name": "mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/mcw-mcwfences-1.2.1-mc1.20.1forge.jar",
+      "sha1": "d24bc6e1ba7f04e058db019ae5ca3d10edd9510a"
+    }
+    ,
+    {
+      "name": "mcwnaturesspirit-forge-1.20.1-1.6.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/mcwnaturesspirit-forge-1.20.1-1.6.jar",
+      "sha1": "dadaacea7ba16258c31574806d3164edac8bdcf5"
+    }
+    ,
+    {
+      "name": "mcw-roofs-2.3.2-mc1.20.1forge.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/mcw-roofs-2.3.2-mc1.20.1forge.jar",
+      "sha1": "2b02beb2bd177aa695dc6fc030fc3bb230ca96b1"
+    }
+    ,
+    {
       "name": "modernfix-forge-5.27.51+mc1.20.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/modernfix-forge-5.27.51+mc1.20.1.jar",
       "sha1": "1f69aa3406e24c645d4b9df25c35a6e4deb66527"
@@ -734,6 +770,12 @@
     }
     ,
     {
+      "name": "natures_spirit-2.2.5-1.20.1.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/natures_spirit-2.2.5-1.20.1.jar",
+      "sha1": "edd4d2ea52eed1ff90b412f10eb29f5e4650c147"
+    }
+    ,
+    {
       "name": "nenus_pop_plushies-2.7.0-forge-1.20.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/nenus_pop_plushies-2.7.0-forge-1.20.1.jar",
       "sha1": "d25f5cab710f55a876e97b0149f858602c29709d"
@@ -755,6 +797,18 @@
       "name": "oculus-mc1.20.1-1.8.0.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/oculus-mc1.20.1-1.8.0.jar",
       "sha1": "984f774e71790deaec674c7587bd24e0711871b2"
+    }
+    ,
+    {
+      "name": "Oh-The-Biomes-Weve-Gone-Forge-1.8.0.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/Oh-The-Biomes-Weve-Gone-Forge-1.8.0.jar",
+      "sha1": "5924e8b6cec952dae66055ebaea1bde6f84e2239"
+    }
+    ,
+    {
+      "name": "Oh-The-Trees-Youll-Grow-forge-1.20.1-1.7.0.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/Oh-The-Trees-Youll-Grow-forge-1.20.1-1.7.0.jar",
+      "sha1": "d110dd6c11216d44e704862db8c107f83eda79fb"
     }
     ,
     {
@@ -995,6 +1049,12 @@
       "name": "xercapaint-1.20.1-1.1.0.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/xercapaint-1.20.1-1.1.0.jar",
       "sha1": "278e859d83bc44325e7ad8ac3ccbbca75e115039"
+    }
+    ,
+    {
+      "name": "yuushya-1.20.1-forge-2.3.0.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/yuushya-1.20.1-forge-2.3.0.jar",
+      "sha1": "4ac64e0368ea02a2271326bc41f421a31e6604a3"
     }
     ,
     {
