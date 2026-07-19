@@ -1052,12 +1052,6 @@
     }
     ,
     {
-      "name": "yuushya-1.20.1-forge-2.3.0.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/yuushya-1.20.1-forge-2.3.0.jar",
-      "sha1": "4ac64e0368ea02a2271326bc41f421a31e6604a3"
-    }
-    ,
-    {
       "name": "Zeta-1.0-31.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/Zeta-1.0-31.jar",
       "sha1": "8c4a8ef0444b53ff408d5b89126285031081d92f"
