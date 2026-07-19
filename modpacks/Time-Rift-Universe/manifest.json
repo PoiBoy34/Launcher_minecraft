@@ -14,12 +14,6 @@
     }
     ,
     {
-      "name": "accessories-neoforge-1.0.0-beta.48+1.20.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/accessories-neoforge-1.0.0-beta.48+1.20.1.jar",
-      "sha1": "22d8aed468ce41b78389b801cec1cd33faa5edb5"
-    }
-    ,
-    {
       "name": "addonslib-forge-1.20.1-1.11.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/addonslib-forge-1.20.1-1.11.jar",
       "sha1": "7477a3b4f63dbcfe596b0cd017ceec44cefc93be"
@@ -197,18 +191,6 @@
       "name": "connected_signs-1.0.1.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/connected_signs-1.0.1.jar",
       "sha1": "dc70f67016643d2e863e3c876a57ca63f6e9694d"
-    }
-    ,
-    {
-      "name": "Connector-1.0.0-beta.48+1.20.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/Connector-1.0.0-beta.48+1.20.1.jar",
-      "sha1": "23f4a45b2ea66548fddff299326cd56e2d9e5cf8"
-    }
-    ,
-    {
-      "name": "ConnectorExtras-1.11.2+1.20.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/ConnectorExtras-1.11.2+1.20.1.jar",
-      "sha1": "9336db4e6ce458bccf7724c039f0371e822397ae"
     }
     ,
     {
@@ -407,12 +389,6 @@
       "name": "fabledweaponry-1.20.1-1.0.7.5.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/fabledweaponry-1.20.1-1.0.7.5.jar",
       "sha1": "281d7539ddb2637b3f2676752b3b461a9df534e9"
-    }
-    ,
-    {
-      "name": "fabric-api-0.92.6+1.11.14+1.20.1.jar",
-      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/fabric-api-0.92.6+1.11.14+1.20.1.jar",
-      "sha1": "285c22b2567b9fdf98ef9808eceb5557de9611d3"
     }
     ,
     {
