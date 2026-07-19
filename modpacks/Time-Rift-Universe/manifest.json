@@ -14,6 +14,12 @@
     }
     ,
     {
+      "name": "accessories-neoforge-1.0.0-beta.48+1.20.1.jar",
+      "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/accessories-neoforge-1.0.0-beta.48+1.20.1.jar",
+      "sha1": "22d8aed468ce41b78389b801cec1cd33faa5edb5"
+    }
+    ,
+    {
       "name": "addonslib-forge-1.20.1-1.11.jar",
       "url": "https://raw.githubusercontent.com/PoiBoy34/Launcher_minecraft/main/modpacks/Time-Rift-Universe/mods/addonslib-forge-1.20.1-1.11.jar",
       "sha1": "7477a3b4f63dbcfe596b0cd017ceec44cefc93be"
