@@ -30,6 +30,10 @@ jobs:
         working-directory: packwiz/Time-Rift-Universe
         run: packwiz modrinth export -o "$GITHUB_WORKSPACE/TimeRift.mrpack"
 
+      - name: Export CurseForge zip
+        working-directory: packwiz/Time-Rift-Universe
+        run: packwiz curseforge export -o "$GITHUB_WORKSPACE/TimeRift-CurseForge.zip"
+
       - name: Commit metadata
         run: |
           git config user.name "github-actions[bot]"
@@ -46,4 +50,6 @@ jobs:
           body: "Modpack auto-généré. À importer dans Prism Launcher ou l'app Modrinth."
           prerelease: true
           make_latest: false
-          files: TimeRift.mrpack
+          files: |
+            TimeRift.mrpack
+            TimeRift-CurseForge.zip
