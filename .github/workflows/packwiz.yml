@@ -38,8 +38,12 @@ jobs:
           git diff --staged --quiet || git commit -m "auto: refresh packwiz metadata"
           git push
 
-      - uses: softprops/action-gh-release@v2
+      - name: Publish modpack release
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: latest
-          name: "Time Rift — dernière version"
+          tag_name: mrpack
+          name: "Time Rift — modpack (packwiz)"
+          body: "Modpack auto-généré. À importer dans Prism Launcher ou l'app Modrinth."
+          prerelease: true
+          make_latest: false
           files: TimeRift.mrpack
