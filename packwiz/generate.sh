@@ -35,3 +35,11 @@ done
 
 packwiz refresh
 echo "==> $count mods référencés"
+
+# --- Fichiers additionnels (servers.dat, configs par défaut) ---
+if [ -f "$ROOT/modpacks/$PACK_NAME/servers.dat" ]; then
+  cp "$ROOT/modpacks/$PACK_NAME/servers.dat" "$OUT/servers.dat"
+  echo "  + servers.dat"
+fi
+
+packwiz refresh
